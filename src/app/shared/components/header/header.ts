@@ -1,0 +1,16 @@
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  templateUrl: './header.html',
+  styleUrl: './header.scss'
+})
+export class HeaderComponent {
+
+  mobileMenuOpen = signal(false);
+
+  toggleMenu(): void {
+    this.mobileMenuOpen.update(value => !value);
+  }
+}
