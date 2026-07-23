@@ -8,9 +8,4 @@ import { Component, signal } from '@angular/core';
 })
 export class HeaderComponent {
 
-  mobileMenuOpen = signal(false);
-
-  toggleMenu(): void {
-    this.mobileMenuOpen.update(value => !value);
   }
-}
