@@ -1,8 +1,14 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 
 import { AppConfig } from '../models/app-config.model';
+
+const DEFAULT_CONFIG: AppConfig = {
+  apiUrl: '/api',
+  oauthUrl: ''
+};
 
 @Injectable({
   providedIn: 'root'
@@ -11,45 +17,46 @@ export class ConfigService {
 
   private readonly http = inject(HttpClient);
 
+  private readonly platformId = inject(PLATFORM_ID);
+
   private config: AppConfig | null = null;
 
   async loadConfig(): Promise<void> {
 
-    console.log('Loading application configuration...');
+    // Skip runtime configuration during SSR / prerender
+    if (!isPlatformBrowser(this.platformId)) {
+      console.log('Skipping runtime configuration during SSR.');
+      return;
+    }
 
-    this.config = await firstValueFrom(
-      this.http.get<AppConfig>('/config/app-config.json')
-    );
+    try {
 
-    console.log('Configuration loaded successfully.');
+      this.config = await firstValueFrom(
+        this.http.get<AppConfig>('/config/app-config.json')
+      );
+
+      console.log('Application configuration loaded successfully.');
+
+    } catch (error) {
+
+      console.error('Failed to load application configuration.', error);
+
+      this.config = DEFAULT_CONFIG;
+
+    }
 
   }
 
   get apiUrl(): string {
-
-    if (!this.config) {
-      throw new Error('Application configuration has not been loaded.');
-    }
-
-    return this.config.apiUrl;
+    return (this.config ?? DEFAULT_CONFIG).apiUrl;
   }
 
   get oauthUrl(): string {
-
-    if (!this.config) {
-      throw new Error('Application configuration has not been loaded.');
-    }
-
-    return this.config.oauthUrl;
+    return (this.config ?? DEFAULT_CONFIG).oauthUrl;
   }
 
   get configuration(): AppConfig {
-
-    if (!this.config) {
-      throw new Error('Application configuration has not been loaded.');
-    }
-
-    return this.config;
+    return this.config ?? DEFAULT_CONFIG;
   }
 
 }
