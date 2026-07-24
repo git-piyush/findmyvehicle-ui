@@ -1,0 +1,86 @@
+<header class="app-header">
+
+    <div class="header-left">
+
+    <button
+    mat-icon-button
+    class="menu-button"
+    aria-label="Open navigation"
+    (click)="openMenu()">
+
+    <mat-icon>menu</mat-icon>
+
+</button>
+
+    <a
+        routerLink="/"
+        class="logo">
+
+        🚗 Find My Vehicle
+
+    </a>
+
+</div>
+
+<nav class="header-center">
+
+    @for (item of navigation; track item.route) {
+
+        <a
+            [routerLink]="item.route"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: item.route === '/' }">
+
+            {{ item.label }}
+
+        </a>
+
+    }
+
+</nav>
+
+    <div class="header-right">
+
+<div class="theme-toggle">
+
+    <button
+        mat-icon-button
+        (click)="themeService.toggleTheme()">
+
+        @if (themeService.theme() === 'dark') {
+
+            <mat-icon class="sun-icon">
+                light_mode
+            </mat-icon>
+
+        } @else {
+
+            <mat-icon class="moon-icon">
+                dark_mode
+            </mat-icon>
+
+        }
+
+    </button>
+
+</div>
+
+    <button
+        mat-button
+        color="primary">
+
+        Login
+
+    </button>
+
+    <button
+        mat-raised-button
+        color="primary">
+
+        Register
+
+    </button>
+
+</div>
+
+</header>

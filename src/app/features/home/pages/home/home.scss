@@ -1,3 +1,19 @@
+:host {
+
+    display: block;
+
+    padding: 32px;
+
+    background: var(--color-background);
+
+    color: var(--color-text);
+
+    min-height: 100%;
+
+}
+
 h1 {
+
     margin-bottom: 16px;
+
 }

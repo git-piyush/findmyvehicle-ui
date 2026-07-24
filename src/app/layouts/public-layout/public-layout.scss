@@ -1,3 +1,35 @@
+:host {
+
+    display: block;
+
+    min-height: 100vh;
+
+    background: var(--color-background);
+
+    color: var(--color-text);
+
+}
+
+mat-sidenav-container {
+
+    min-height: 100vh;
+
+    background: var(--color-background);
+
+}
+
+mat-sidenav-content {
+
+    background: var(--color-background);
+
+}
+
 main {
-    min-height: calc(100vh - 140px);
+
+    background: var(--color-background);
+
+    color: var(--color-text);
+
+    min-height: calc(100vh - 64px - 56px);
+
 }

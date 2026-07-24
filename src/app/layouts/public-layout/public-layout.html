@@ -1,5 +1,29 @@
-<app-header></app-header>
-<main>
-    <router-outlet></router-outlet>
-</main>
-<app-footer></app-footer>
+<mat-sidenav-container>
+
+    <mat-sidenav
+        mode="over"
+        #drawer>
+
+        <app-mobile-nav
+            (closeMenu)="closeDrawer()">
+        </app-mobile-nav>
+
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+
+        <app-header
+    (menuClick)="toggleDrawer()">
+</app-header>
+
+        <main>
+
+            <router-outlet></router-outlet>
+
+        </main>
+
+        <app-footer></app-footer>
+
+    </mat-sidenav-content>
+
+</mat-sidenav-container>

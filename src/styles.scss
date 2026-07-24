@@ -3,6 +3,7 @@
 // components according to the Material 3 design spec.
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
+@use 'styles/themes';
 @use '@angular/material' as mat;
 
 html {
@@ -35,5 +36,40 @@ body {
   // Reset the user agent margin.
   margin: 0;
   height: 100%;
+}
+
+html,
+body {
+
+    margin: 0;
+
+    min-height: 100%;
+
+    background: var(--color-background);
+
+    color: var(--color-text);
+
+    transition:
+        background-color .25s ease,
+        color .25s ease;
+
+}
+
+body {
+
+  background: var(--color-background);
+
+  color: var(--color-text);
+
+  font: var(--mat-sys-body-medium);
+
+  margin: 0;
+
+  height: 100%;
+
+  transition:
+      background-color .25s ease,
+      color .25s ease;
+
 }
 /* You can add global styles to this file, and also import other style files */

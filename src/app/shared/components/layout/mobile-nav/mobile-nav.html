@@ -1,0 +1,101 @@
+<div class="mobile-nav">
+
+    <!-- Logo -->
+
+    <div class="mobile-nav-header">
+
+        🚗 Find My Vehicle
+
+    </div>
+
+    <!-- Navigation -->
+
+    <mat-nav-list>
+
+        @for (item of navigation; track item.route) {
+
+            <a
+                mat-list-item
+                [routerLink]="item.route"
+                routerLinkActive="active-link"
+                (click)="closeMenu.emit()">
+
+                <mat-icon matListItemIcon>
+
+                    {{ item.icon }}
+
+                </mat-icon>
+
+                <span matListItemTitle>
+
+                    {{ item.label }}
+
+                </span>
+
+            </a>
+
+        }
+
+    </mat-nav-list>
+
+    <mat-divider></mat-divider>
+
+    <!-- Theme -->
+
+    <div class="theme-section">
+
+        <div class="theme-label">
+
+            <mat-icon>
+
+                {{ themeService.theme() === 'dark'
+                    ? 'light_mode'
+                    : 'dark_mode' }}
+
+            </mat-icon>
+
+            <span>
+
+                {{ themeService.theme() === 'dark'
+                    ? 'Light Mode'
+                    : 'Dark Mode' }}
+
+            </span>
+
+        </div>
+
+        <mat-slide-toggle
+            [checked]="themeService.theme() === 'dark'"
+            (change)="themeService.toggleTheme()">
+
+        </mat-slide-toggle>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Guest Actions -->
+
+    <div class="mobile-nav-footer">
+
+        <button
+            mat-button
+            routerLink="/login"
+            (click)="closeMenu.emit()">
+
+            Login
+
+        </button>
+
+        <button
+            mat-flat-button
+            routerLink="/register"
+            (click)="closeMenu.emit()">
+
+            Register
+
+        </button>
+
+    </div>
+
+</div>

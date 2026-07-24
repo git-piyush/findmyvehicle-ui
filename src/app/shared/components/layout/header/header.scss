@@ -1,0 +1,238 @@
+/* ===========================
+   HEADER
+=========================== */
+
+.app-header {
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 24px;
+
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+
+    backdrop-filter: blur(12px);
+
+}
+
+/* ===========================
+   LEFT
+=========================== */
+
+.header-left {
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    flex: 0 0 auto;
+
+}
+
+.logo {
+
+    display: flex;
+    align-items: center;
+
+    text-decoration: none;
+
+    color: var(--color-text);
+
+    font-size: 22px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+}
+
+/* ===========================
+   CENTER
+=========================== */
+
+.header-center {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 1;
+
+    min-width: 0;
+
+    gap: 24px;
+
+}
+
+.header-center a {
+
+    position: relative;
+
+    text-decoration: none;
+
+    color: var(--color-text);
+
+    font-weight: 500;
+
+    transition: color .25s ease;
+
+}
+
+.header-center a:hover {
+
+    color: var(--color-primary);
+
+}
+
+.active-link {
+
+    color: var(--color-primary) !important;
+
+    font-weight: 700;
+
+}
+
+.active-link::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: -6px;
+
+    width: 100%;
+    height: 2px;
+
+    background: var(--color-primary);
+
+    border-radius: 2px;
+
+}
+
+/* ===========================
+   RIGHT
+=========================== */
+
+.header-right {
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    flex: 0 0 auto;
+
+    gap: 12px;
+
+    white-space: nowrap;
+
+}
+
+/* ===========================
+   THEME
+=========================== */
+
+.theme-toggle {
+
+    display: flex;
+    align-items: center;
+
+}
+
+.moon-icon,
+.sun-icon {
+
+    color: var(--theme-icon-color);
+
+}
+
+/* ===========================
+   MENU BUTTON
+=========================== */
+
+.menu-button {
+
+    display: none;
+
+}
+
+/* ===========================
+   TABLET
+=========================== */
+
+@media (max-width: 992px) {
+
+    .header-center {
+
+        gap: 20px;
+
+    }
+
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+/* ===========================
+   TABLET + MOBILE
+=========================== */
+
+@media (max-width: 1199px) {
+
+    .menu-button {
+        display: inline-flex;
+    }
+
+    .header-center {
+        display: none;
+    }
+
+    .header-right {
+        gap: 6px;
+    }
+
+    /* Hide Login/Register */
+
+    .header-right button[mat-button],
+    .header-right button[mat-raised-button] {
+        display: none;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .app-header {
+        padding: 0 16px;
+    }
+
+}
+
+/* ===========================
+   SMALL MOBILE
+=========================== */
+
+@media (max-width: 480px) {
+
+    .app-header {
+
+        height: 56px;
+        padding: 0 12px;
+
+    }
+
+    .logo {
+
+        font-size: 16px;
+
+    }
+
+}

@@ -1,0 +1,67 @@
+.mobile-nav {
+
+    width: 280px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    height: 100%;
+
+}
+
+.mobile-nav-header {
+
+    padding: 24px;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+    border-bottom: 1px solid var(--color-border);
+
+}
+
+.mobile-nav-footer {
+
+    margin-top: auto;
+
+    padding: 16px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+}
+
+.theme-section {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 16px;
+
+}
+
+.theme-label {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-weight: 500;
+
+}
+
+.theme-label mat-icon {
+
+    color: var(--theme-icon-color);
+
+}
