@@ -1,0 +1,139 @@
+<section class="latest-section">
+
+    <div class="container">
+
+        <span class="subtitle">
+
+            LATEST REPORTS
+
+        </span>
+
+        <h2>
+
+            Recently Reported Vehicles
+
+        </h2>
+
+        <p>
+
+            Help identify these vehicles and support their owners.
+
+        </p>
+
+        <div class="vehicle-grid">
+
+            @for(vehicle of vehicles;track vehicle.number){
+
+            <article class="vehicle-card">
+
+                <div class="image-wrapper">
+
+                    <img
+                        [src]="vehicle.image"
+                        [alt]="vehicle.brand">
+
+                    <button class="bookmark">
+
+                        <mat-icon>
+
+                            bookmark_border
+
+                        </mat-icon>
+
+                    </button>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="vehicle-title">
+
+                        <div class="circle">
+
+                            <mat-icon>
+
+                                {{vehicle.type}}
+
+                            </mat-icon>
+
+                        </div>
+
+                        <h3>
+
+                            {{vehicle.brand}}
+
+                        </h3>
+
+                    </div>
+
+                    <div class="info">
+
+                        <mat-icon>credit_card</mat-icon>
+
+                        <span>
+
+                            {{vehicle.number}}
+
+                        </span>
+
+                    </div>
+
+                    <div class="info">
+
+                        <mat-icon>location_on</mat-icon>
+
+                        <span>
+
+                            {{vehicle.location}}
+
+                        </span>
+
+                    </div>
+
+                    <span class="status">
+
+                        ● {{vehicle.status}}
+
+                    </span>
+
+                    <button class="details-btn">
+
+                        <mat-icon>
+
+                            visibility
+
+                        </mat-icon>
+
+                        View Details
+
+                    </button>
+
+                </div>
+
+            </article>
+
+            }
+
+        </div>
+
+        <button class="view-all">
+
+            <mat-icon>
+
+                format_list_bulleted
+
+            </mat-icon>
+
+            View All Reports
+
+            <mat-icon>
+
+                chevron_right
+
+            </mat-icon>
+
+        </button>
+
+    </div>
+
+</section>
