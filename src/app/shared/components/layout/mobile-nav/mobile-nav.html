@@ -15,6 +15,7 @@
         @for (item of navigation; track item.route) {
 
             <a
+                class="mobile-link"
                 mat-list-item
                 [routerLink]="item.route"
                 routerLinkActive="active-link"
@@ -76,12 +77,18 @@
 
     <!-- Guest Actions -->
 
+    <!-- Authentication -->
+
+@if (!loggedIn()) {
+
     <div class="mobile-nav-footer">
 
         <button
             mat-button
             routerLink="/login"
             (click)="closeMenu.emit()">
+
+            <mat-icon>login</mat-icon>
 
             Login
 
@@ -92,10 +99,42 @@
             routerLink="/register"
             (click)="closeMenu.emit()">
 
+            <mat-icon>person_add</mat-icon>
+
             Register
 
         </button>
 
     </div>
+
+} @else {
+
+    <div class="mobile-nav-footer">
+
+        <button
+            mat-button
+            routerLink="/profile"
+            (click)="closeMenu.emit()">
+
+            <mat-icon>person</mat-icon>
+
+            My Profile
+
+        </button>
+
+        <button
+            mat-flat-button
+            color="warn"
+            (click)="logout()">
+
+            <mat-icon>logout</mat-icon>
+
+            Logout
+
+        </button>
+
+    </div>
+
+}
 
 </div>

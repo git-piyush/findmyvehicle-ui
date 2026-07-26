@@ -236,3 +236,18 @@
     }
 
 }
+
+.desktop-auth {
+    display: flex;
+    gap: 10px;
+}
+
+
+@media (max-width: 768px) {
+
+    .desktop-auth {
+        display: none;
+    }
+
+}
+

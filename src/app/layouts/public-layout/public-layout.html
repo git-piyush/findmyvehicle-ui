@@ -1,20 +1,35 @@
-<mat-sidenav-container>
+<div class="layout-container">
 
-    <mat-sidenav
-        mode="over"
-        #drawer>
+    <!-- Mobile Overlay -->
+
+    @if (drawerOpen) {
+
+        <div
+            class="mobile-overlay"
+            (click)="closeDrawer()">
+        </div>
+
+    }
+
+    <!-- Mobile Sidebar -->
+
+    <aside
+        class="mobile-sidebar"
+        [class.open]="drawerOpen">
 
         <app-mobile-nav
             (closeMenu)="closeDrawer()">
         </app-mobile-nav>
 
-    </mat-sidenav>
+    </aside>
 
-    <mat-sidenav-content>
+    <!-- Main Content -->
+
+    <div class="layout-content">
 
         <app-header
-    (menuClick)="toggleDrawer()">
-</app-header>
+            (menuClick)="toggleDrawer()">
+        </app-header>
 
         <main>
 
@@ -24,6 +39,6 @@
 
         <app-footer></app-footer>
 
-    </mat-sidenav-content>
+    </div>
 
-</mat-sidenav-container>
+</div>

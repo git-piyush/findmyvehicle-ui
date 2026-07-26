@@ -71,22 +71,26 @@
 
         @if (!isLoggedIn()) {
 
-            <button
-                mat-button
-                routerLink="/login">
+            <div class="desktop-auth">
 
-                Login
+                    <button
+                        mat-button
+                        routerLink="/login">
 
-            </button>
+                        Login
 
-            <button
-                mat-flat-button
-                color="primary"
-                routerLink="/register">
+                    </button>
 
-                Register
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        routerLink="/register">
 
-            </button>
+                        Register
+
+                    </button>
+
+                </div>
 
         } @else {
 

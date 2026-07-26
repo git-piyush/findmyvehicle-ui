@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
 import { HeaderComponent } from '../../shared/components/layout/header/header';
 import { FooterComponent } from '../../shared/components/layout/footer/footer';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MobileNavComponent } from '../../shared/components/layout/mobile-nav/mobile-nav';
-import { ViewChild } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-public-layout',
@@ -14,25 +12,25 @@ import { MatSidenav } from '@angular/material/sidenav';
     RouterOutlet,
     HeaderComponent,
     FooterComponent,
-    MatSidenavModule,
     MobileNavComponent
   ],
   templateUrl: './public-layout.html',
   styleUrl: './public-layout.scss'
 })
 export class PublicLayoutComponent {
-  @ViewChild(MatSidenav)
-drawer!: MatSidenav;
 
-toggleDrawer(): void {
+  drawerOpen = false;
 
-    this.drawer.toggle();
+  toggleDrawer(): void {
 
-}
+    this.drawerOpen = !this.drawerOpen;
 
-closeDrawer(): void {
+  }
 
-    this.drawer.close();
+  closeDrawer(): void {
 
-}
+    this.drawerOpen = false;
+
+  }
+
 }
