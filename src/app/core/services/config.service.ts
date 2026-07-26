@@ -47,13 +47,29 @@ export class ConfigService {
 
   }
 
-  get apiUrl(): string {
-    return (this.config ?? DEFAULT_CONFIG).apiUrl;
+get apiUrl(): string {
+
+  if (!isPlatformBrowser(this.platformId)) {
+    return DEFAULT_CONFIG.apiUrl;
   }
 
-  get oauthUrl(): string {
-    return (this.config ?? DEFAULT_CONFIG).oauthUrl;
+  return window.location.hostname === 'localhost'
+    ? '/api'
+    : 'https://findmyvehicle.onrender.com/api';
+
+}
+
+get oauthUrl(): string {
+
+  if (!isPlatformBrowser(this.platformId)) {
+    return DEFAULT_CONFIG.oauthUrl;
   }
+
+  return window.location.hostname === 'localhost'
+    ? ''
+    : 'https://findmyvehicle.onrender.com/oauth2';
+
+}
 
   get configuration(): AppConfig {
     return this.config ?? DEFAULT_CONFIG;

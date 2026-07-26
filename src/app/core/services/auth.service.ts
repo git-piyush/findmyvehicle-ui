@@ -1,10 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ConfigService } from './config.service';
-import { AuthUser } from '../models/auth/auth-user.model';
-import { ApiResponse } from '../models/common/api-response.model';
+import { Observable, tap } from 'rxjs';
 
+import { ConfigService } from './config.service';
+import { TokenService } from './token.service';
+
+import { LoginResponse } from '../models/auth/login-response';
+
+import { RegisterRequest } from '../models/auth/register-request';
+import { RegisterResponse } from '../models/auth/register-response';
+import { LoginRequest } from '../models/auth/login-request';
 
 @Injectable({
   providedIn: 'root'
@@ -15,36 +20,56 @@ export class AuthService {
 
   private readonly config = inject(ConfigService);
 
-  /**
-   * Returns the currently authenticated user.
-   */
-  getCurrentUser(): Observable<ApiResponse<AuthUser>> {
+  private readonly tokenService = inject(TokenService);
 
-    return this.http.get<ApiResponse<AuthUser>>(
-      `${this.config.apiUrl}/auth/me`
+  private get api(): string {
+
+    return this.config.apiUrl;
+
+  }
+
+  register(request: RegisterRequest): Observable<RegisterResponse> {
+
+    return this.http.post<RegisterResponse>(
+      `${this.api}/auth/register`,
+      request
     );
 
   }
 
-  /**
-   * Redirects the user to Google OAuth login.
-   */
-  loginWithGoogle(): void {
+  login(request: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
+      `${this.api}/auth/login`,
+      request
+    ).pipe(
+      tap(response => {
+        this.tokenService.saveToken(
+          response.userIdentity.token
+        );
 
-    window.location.href =
-      `${this.config.oauthUrl}/oauth2/authorization/google`;
+        this.tokenService.saveRole(
+          response.userIdentity.role
+        );
+
+        this.tokenService.saveUserName(
+          response.userIdentity.userName
+        );
+
+      })
+
+    );
 
   }
 
-  /**
-   * Logout endpoint.
-   */
-  logout(): Observable<ApiResponse<void>> {
+  logout(): void {
 
-    return this.http.post<ApiResponse<void>>(
-      `${this.config.apiUrl}/auth/logout`,
-      {}
-    );
+    this.tokenService.clear();
+
+  }
+
+  isLoggedIn(): boolean {
+
+    return this.tokenService.hasAccessToken();
 
   }
 

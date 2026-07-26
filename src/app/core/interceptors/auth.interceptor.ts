@@ -1,23 +1,40 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import {
+  HttpInterceptorFn
+} from '@angular/common/http';
+
+import {
+  inject
+} from '@angular/core';
 
 import { TokenService } from '../services/token.service';
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
+export const authInterceptor: HttpInterceptorFn = (
+
+  request,
+  next
+
+) => {
 
   const tokenService = inject(TokenService);
 
   const token = tokenService.getAccessToken();
 
-  // Don't attach token if user is not logged in
+  // No JWT available
   if (!token) {
-    return next(req);
+
+    return next(request);
+
   }
 
-  const authenticatedRequest = req.clone({
+  // Add Authorization header
+  const authenticatedRequest = request.clone({
+
     setHeaders: {
+
       Authorization: `Bearer ${token}`
+
     }
+
   });
 
   return next(authenticatedRequest);

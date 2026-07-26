@@ -72,4 +72,73 @@ body {
       color .25s ease;
 
 }
+
+/* ==========================================
+   Angular Material Global Overrides
+========================================== */
+
+.mat-mdc-checkbox .mdc-form-field {
+
+    color: var(--color-text);
+
+}
+
+.mat-mdc-checkbox label {
+
+    color: var(--color-text);
+
+}
+/* ==========================================================
+   Angular Material Input - Dark Theme Fix
+========================================================== */
+
+/* Input text */
+
+.mat-mdc-input-element {
+
+    color: var(--color-text) !important;
+
+}
+
+/* Placeholder */
+
+.mat-mdc-input-element::placeholder {
+
+    color: var(--color-text-secondary) !important;
+
+    opacity: 1;
+
+}
+
+/* Form field label */
+
+.mat-mdc-form-field .mdc-floating-label {
+
+    color: var(--color-text-secondary) !important;
+
+}
+
+/* Floating label */
+
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
+
+    color: var(--color-primary) !important;
+
+}
+
+/* Prefix / Suffix icons */
+
+.mat-mdc-form-field mat-icon {
+
+    color: var(--color-text-secondary);
+
+}
+
+/* Input caret */
+
+.mat-mdc-input-element {
+
+    caret-color: var(--color-primary);
+
+}
 /* You can add global styles to this file, and also import other style files */

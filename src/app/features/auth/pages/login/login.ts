@@ -1,0 +1,160 @@
+import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+
+import { RouterLink } from '@angular/router';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { AuthService } from '../../../../core/services/auth.service';
+import { LoginRequest } from '../../../../core/models/auth/login-request';
+import { ConfigService } from '../../../../core/services/config.service';
+
+@Component({
+  selector: 'app-login',
+
+  standalone: true,
+
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatDividerModule
+  ],
+
+  templateUrl: './login.html',
+
+  styleUrl: './login.scss'
+})
+export class Login {
+
+  private readonly configService = inject(ConfigService);
+
+  private readonly authService = inject(AuthService);
+
+private readonly router = inject(Router);
+
+  private readonly fb = inject(FormBuilder);
+
+  readonly hidePassword = signal(true);
+
+  readonly loading = signal(false);
+
+  readonly loginForm = this.fb.group({
+
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email
+      ]
+    ],
+
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(6)
+      ]
+    ],
+
+    rememberMe: [false]
+
+  });
+
+  togglePassword(): void {
+
+    this.hidePassword.update(value => !value);
+
+  }
+
+login(): void {
+
+  if (this.loginForm.invalid) {
+
+    this.loginForm.markAllAsTouched();
+
+    return;
+
+  }
+
+  this.loading.set(true);
+
+  this.authService
+    .login(this.loginForm.getRawValue() as LoginRequest)
+    .pipe(
+      finalize(() => this.loading.set(false))
+    )
+    .subscribe({
+
+      next: (response) => {
+
+        console.log(response);
+
+        // Navigate according to role
+
+        switch (response.userIdentity.role) {
+
+          case 'ADMIN':
+            this.router.navigate(['/admin/dashboard']);
+            break;
+
+          case 'POLICE':
+            this.router.navigate(['/police/dashboard']);
+            break;
+
+          default:
+            this.router.navigate(['/dashboard']);
+
+        }
+
+      },
+
+      error: (error) => {
+
+        console.error(error);
+
+        // We'll replace this with Snackbar later
+        alert(
+          error?.error?.status?.message ??
+          'Invalid email or password.'
+        );
+
+      }
+
+    });
+
+}
+
+googleLogin(): void {
+  window.location.href =
+    `${this.configService.oauthUrl}/oauth2/authorization/google`;
+}
+
+  get email() {
+
+    return this.loginForm.controls.email;
+
+  }
+
+  get password() {
+
+    return this.loginForm.controls.password;
+
+  }
+
+}
