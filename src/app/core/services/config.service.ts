@@ -67,7 +67,7 @@ get oauthUrl(): string {
 
   return window.location.hostname === 'localhost'
     ? ''
-    : 'https://findmyvehicle.onrender.com/oauth2';
+    : 'https://findmyvehicle.onrender.com';
 
 }
 
