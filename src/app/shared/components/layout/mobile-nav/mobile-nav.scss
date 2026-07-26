@@ -1,92 +1,222 @@
 .mobile-nav {
 
-    width: 280px;
-
-    height: 100vh;
+    height: 100%;
 
     display: flex;
 
     flex-direction: column;
 
-    background: var(--color-surface);
+    background: var(--color-background);
 
     color: var(--color-text);
 
-    overflow: hidden;
+}
+
+/* ===============================
+   Header
+================================ */
+
+.mobile-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 20px;
+
+    border-bottom: 1px solid var(--color-border);
 
 }
 
-.mobile-nav-header {
-
-    padding: 24px;
+.logo {
 
     font-size: 22px;
 
     font-weight: 700;
 
-    border-bottom: 1px solid var(--color-border);
+    color: var(--color-primary);
+
+}
+
+.close-btn {
+
+    width: 38px;
+
+    height: 38px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    font-size: 20px;
+
+    background: transparent;
+
+    color: var(--color-text);
+
+    transition: .25s;
+
+}
+
+.close-btn:hover {
+
+    background: rgba(0,0,0,.08);
+
+}
+
+.dark .close-btn:hover {
+
+    background: rgba(255,255,255,.08);
+
+}
+
+/* ===============================
+   Profile
+================================ */
+
+.profile-card {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin: 18px;
+
+    padding: 16px;
+
+    border-radius: 16px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+}
+
+.avatar {
+
+    width: 54px;
+
+    height: 54px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    background: var(--color-primary);
+
+    color: #fff;
+
+}
+
+.profile-name {
+
+    font-weight: 700;
 
     color: var(--color-text);
 
 }
 
-mat-nav-list {
+.profile-card a {
 
-    flex: 1;
+    text-decoration: none;
 
-    overflow-y: auto;
+    color: var(--color-primary);
 
-}
-
-/* FORCE NAVIGATION TEXT TO BE VISIBLE */
-
-.mobile-link {
-
-    color: var(--color-text) !important;
+    font-size: 14px;
 
 }
 
-.mobile-link .mdc-list-item__primary-text {
+/* ===============================
+   Navigation
+================================ */
 
-    color: var(--color-text) !important;
+.menu-section {
 
-}
-
-.mobile-link mat-icon {
-
-    color: var(--color-text) !important;
+    padding: 8px 14px;
 
 }
 
-.mobile-link.active-link .mdc-list-item__primary-text {
-
-    color: var(--color-primary) !important;
-
-}
-
-.mobile-link.active-link mat-icon {
-
-    color: var(--color-primary) !important;
-
-}
-
-.theme-section {
+.menu-item {
 
     display: flex;
 
-    justify-content: space-between;
-
     align-items: center;
 
-    padding: 16px;
+    gap: 18px;
 
-    border-top: 1px solid var(--color-border);
+    padding: 14px 16px;
 
-    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 6px;
+
+    border-radius: 14px;
+
+    text-decoration: none;
+
+    color: var(--color-text);
+
+    transition: .25s;
 
 }
 
-.theme-label {
+.menu-item mat-icon {
+
+    color: inherit;
+
+}
+
+.menu-item:hover {
+
+    background: rgba(25,118,210,.10);
+
+}
+
+.menu-item.active {
+
+    background: var(--color-primary);
+
+    color: white;
+
+}
+
+/* ===============================
+   Theme
+================================ */
+
+.theme-card {
+
+    margin: 18px;
+
+    padding: 16px;
+
+    border-radius: 16px;
+
+    border: 1px solid var(--color-border);
+
+    background: var(--color-surface);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+.theme-card div {
 
     display: flex;
 
@@ -96,19 +226,17 @@ mat-nav-list {
 
     color: var(--color-text);
 
-    font-weight: 500;
-
 }
 
-.theme-label mat-icon {
+/* ===============================
+   Bottom Buttons
+================================ */
 
-    color: var(--theme-icon-color);
+.bottom-actions {
 
-}
+    margin-top: auto;
 
-.mobile-nav-footer {
-
-    padding: 16px;
+    padding: 18px;
 
     display: flex;
 
@@ -116,12 +244,42 @@ mat-nav-list {
 
     gap: 12px;
 
+    border-top: 1px solid var(--color-border);
+
 }
 
-.mobile-nav-footer button {
+.bottom-actions button {
 
     width: 100%;
 
-    justify-content: flex-start;
+    height: 46px;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+
+}
+
+/* ===============================
+   Scrollbar
+================================ */
+
+.mobile-nav::-webkit-scrollbar {
+
+    width: 5px;
+
+}
+
+.mobile-nav::-webkit-scrollbar-thumb {
+
+    background: rgba(0,0,0,.20);
+
+    border-radius: 20px;
+
+}
+
+.dark .mobile-nav::-webkit-scrollbar-thumb {
+
+    background: rgba(255,255,255,.20);
 
 }

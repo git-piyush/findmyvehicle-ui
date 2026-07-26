@@ -1,51 +1,98 @@
 <div class="mobile-nav">
 
-    <!-- Logo -->
+    <!-- Header -->
 
-    <div class="mobile-nav-header">
+    <div class="mobile-header">
 
-        🚗 Find My Vehicle
+        <div class="logo">
+
+            🚗 Find My Vehicle
+
+        </div>
+
+        <button
+            class="close-btn"
+            (click)="closeMenu.emit()">
+
+            ✕
+
+        </button>
 
     </div>
 
-    <!-- Navigation -->
+    <!-- Profile -->
 
-    <mat-nav-list>
+    @if (loggedIn()) {
 
-        @for (item of navigation; track item.route) {
+    <div class="profile-card">
+
+        <div class="avatar">
+
+            {{ userName().charAt(0).toUpperCase() }}
+
+        </div>
+
+        <div>
+
+            <div class="profile-name">
+
+                {{ userName() }}
+
+            </div>
 
             <a
-                class="mobile-link"
-                mat-list-item
-                [routerLink]="item.route"
-                routerLinkActive="active-link"
+                routerLink="/profile"
                 (click)="closeMenu.emit()">
 
-                <mat-icon matListItemIcon>
-
-                    {{ item.icon }}
-
-                </mat-icon>
-
-                <span matListItemTitle>
-
-                    {{ item.label }}
-
-                </span>
+                View Profile
 
             </a>
 
+        </div>
+
+    </div>
+
+    }
+
+    <!-- Navigation -->
+
+    <div class="menu-section">
+
+        @for (item of navigation; track item.route) {
+
+        <a
+
+            class="menu-item"
+
+            [routerLink]="item.route"
+
+            routerLinkActive="active"
+
+            (click)="closeMenu.emit()">
+
+            <mat-icon>
+
+                {{ item.icon }}
+
+            </mat-icon>
+
+            <span>
+
+                {{ item.label }}
+
+            </span>
+
+        </a>
+
         }
 
-    </mat-nav-list>
-
-    <mat-divider></mat-divider>
+    </div>
 
     <!-- Theme -->
 
-    <div class="theme-section">
+    <div class="theme-card">
 
-        <div class="theme-label">
+        <div>
 
             <mat-icon>
 
@@ -58,83 +105,71 @@
             <span>
 
                 {{ themeService.theme() === 'dark'
-                    ? 'Light Mode'
-                    : 'Dark Mode' }}
+                    ? 'Light Theme'
+                    : 'Dark Theme' }}
 
             </span>
 
         </div>
 
         <mat-slide-toggle
+
             [checked]="themeService.theme() === 'dark'"
+
             (change)="themeService.toggleTheme()">
 
         </mat-slide-toggle>
 
     </div>
 
-    <mat-divider></mat-divider>
+    <!-- Bottom -->
 
-    <!-- Guest Actions -->
+    <div class="bottom-actions">
 
-    <!-- Authentication -->
-
-@if (!loggedIn()) {
-
-    <div class="mobile-nav-footer">
+        @if (!loggedIn()) {
 
         <button
-            mat-button
-            routerLink="/login"
-            (click)="closeMenu.emit()">
 
-            <mat-icon>login</mat-icon>
+            mat-flat-button
+
+            routerLink="/login"
+
+            (click)="closeMenu.emit()">
 
             Login
 
         </button>
 
         <button
-            mat-flat-button
-            routerLink="/register"
-            (click)="closeMenu.emit()">
 
-            <mat-icon>person_add</mat-icon>
+            mat-stroked-button
+
+            routerLink="/register"
+
+            (click)="closeMenu.emit()">
 
             Register
 
         </button>
 
-    </div>
+        }
 
-} @else {
-
-    <div class="mobile-nav-footer">
+        @else {
 
         <button
-            mat-button
-            routerLink="/profile"
-            (click)="closeMenu.emit()">
 
-            <mat-icon>person</mat-icon>
-
-            My Profile
-
-        </button>
-
-        <button
             mat-flat-button
-            color="warn"
-            (click)="logout()">
 
-            <mat-icon>logout</mat-icon>
+            color="warn"
+
+            (click)="logout()">
 
             Logout
 
         </button>
 
-    </div>
+        }
 
-}
+    </div>
 
 </div>

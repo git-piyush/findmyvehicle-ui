@@ -62,6 +62,10 @@ export class MobileNavComponent {
     this.tokenService.hasAccessToken()
   );
 
+  readonly userName = computed(() =>
+    this.tokenService.getUserName() ?? ''
+  );
+
   logout(): void {
 
     this.authService.logout();
