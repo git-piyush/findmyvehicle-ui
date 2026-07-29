@@ -13,9 +13,29 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        data: {
+          seo: {
+            title: 'Find My Vehicle | Missing & Stolen Vehicle Recovery',
+            description: 'Search and report missing or stolen vehicles across India. Find My Vehicle connects owners, communities and authorities to support faster recovery.',
+            robots: 'index, follow'
+          }
+        },
         loadComponent: () =>
           import('./features/home/pages/home/home')
             .then(c => c.HomeComponent)
+      },
+      {
+        path: 'search',
+        data: {
+          seo: {
+            title: 'Search Missing Vehicles | Find My Vehicle',
+            description: 'Search missing and stolen vehicle reports by registration number, model, or location.',
+            robots: 'noindex, follow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/search/pages/search/search')
+            .then(c => c.SearchComponent)
       }
     ]
   },
@@ -28,6 +48,7 @@ export const routes: Routes = [
     children: [
       {
       path: 'auth/social-callback',
+      data: { seo: { title: 'Signing In | Find My Vehicle', description: 'Completing sign-in.', robots: 'noindex, nofollow' } },
       loadComponent: () =>
         import('./features/auth/pages/social-callback/social-callback')
           .then(c => c.SocialCallback)
@@ -35,6 +56,7 @@ export const routes: Routes = [
 
       {
         path: 'login',
+        data: { seo: { title: 'Login | Find My Vehicle', description: 'Sign in to Find My Vehicle.', robots: 'noindex, nofollow' } },
         loadComponent: () =>
           import('./features/auth/pages/login/login')
             .then(c => c.Login)
@@ -42,6 +64,7 @@ export const routes: Routes = [
 
       {
         path: 'register',
+        data: { seo: { title: 'Register | Find My Vehicle', description: 'Create a Find My Vehicle account.', robots: 'noindex, nofollow' } },
         loadComponent: () =>
           import('./features/auth/pages/register/register')
             .then(c => c.Register)
@@ -49,6 +72,7 @@ export const routes: Routes = [
 
       {
         path: 'forgot-password',
+        data: { seo: { title: 'Reset Password | Find My Vehicle', description: 'Reset your Find My Vehicle password.', robots: 'noindex, nofollow' } },
         loadComponent: () =>
           import('./features/auth/pages/forgot-password/forgot-password')
             .then(c => c.ForgotPassword)
@@ -56,6 +80,7 @@ export const routes: Routes = [
 
       {
         path: 'verify-email',
+        data: { seo: { title: 'Verify Email | Find My Vehicle', description: 'Verify your Find My Vehicle email.', robots: 'noindex, nofollow' } },
         loadComponent: () =>
           import('./features/auth/pages/verify-email/verify-email')
             .then(c => c.VerifyEmail)

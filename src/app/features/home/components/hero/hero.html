@@ -3,6 +3,11 @@
     <div class="hero-left">
       <h1>Find Your Missing<br>Vehicle <span>Faster</span></h1>
       <p>A community platform that connects vehicle owners, citizens and authorities to help recover missing or stolen vehicles.</p>
+      <form class="desktop-search" (ngSubmit)="searchVehicles()">
+        <mat-icon>search</mat-icon>
+        <input name="desktopVehicleSearch" [(ngModel)]="searchTerm" placeholder="Search by Registration Number" aria-label="Search by registration number">
+        <button mat-flat-button type="submit">Search</button>
+      </form>
       <div class="hero-actions">
         <a mat-flat-button class="report-button" routerLink="/report"><mat-icon>warning</mat-icon>Report Missing Vehicle</a>
         <a mat-flat-button class="search-button" routerLink="/search"><mat-icon>search</mat-icon>Search Missing Vehicles</a>
@@ -10,7 +15,11 @@
     </div>
   </div>
 </section>
-<section class="quick-search"><mat-icon>search</mat-icon><span>Search by Reg. Number, Model, Location...</span><mat-icon class="filter">filter_alt</mat-icon></section>
+<form class="quick-search" (ngSubmit)="searchVehicles()">
+  <mat-icon>search</mat-icon>
+  <input name="vehicleSearch" [(ngModel)]="searchTerm" placeholder="Search by Reg. Number, Model, Location..." aria-label="Search vehicles">
+  <button type="submit" aria-label="Search vehicles"><mat-icon>filter_alt</mat-icon></button>
+</form>
 <section class="hero-stats">
   <div class="stat reported"><mat-icon>directions_car</mat-icon><div><b>12,840</b><strong>Vehicles Reported</strong><span>Across India</span></div></div>
   <div class="stat recovered"><mat-icon>verified_user</mat-icon><div><b>4,128</b><strong>Vehicles Recovered</strong><span>Successfully Recovered</span></div></div>

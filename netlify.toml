@@ -9,8 +9,3 @@
   to = "https://findmyvehicle.onrender.com/oauth2/:splat"
   status = 200
   force = true
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
