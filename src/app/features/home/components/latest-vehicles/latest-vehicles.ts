@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 interface Vehicle {
 
@@ -15,6 +16,8 @@ interface Vehicle {
   type:string;
 
   status:string;
+  reward: string;
+  date: string;
 
 }
 
@@ -26,7 +29,8 @@ interface Vehicle {
 
   imports:[
     CommonModule,
-    MatIconModule
+    MatIconModule,
+    RouterLink
   ],
 
   templateUrl:'./latest-vehicles.html',
@@ -45,34 +49,34 @@ brand:'Honda City',
 number:'KA01AB1234',
 location:'Bengaluru, Karnataka',
 type:'directions_car',
-status:'Missing'
+status:'Missing', reward: '₹50,000', date: '25 May 2025'
 },
 
 {
 image:'assets/images/demo/creta.png',
 brand:'Hyundai Creta',
-number:'KA05CD4567',
-location:'Mysuru, Karnataka',
+number:'AP09CD5678',
+location:'Vijayawada, Andhra Pradesh',
 type:'directions_car',
-status:'Missing'
+status:'Missing', reward: '₹30,000', date: '24 May 2025'
 },
 
 {
 image:'assets/images/demo/bullet.png',
 brand:'Royal Enfield',
-number:'KA09EF9876',
-location:'Hubballi, Karnataka',
+number:'TN07EF9876',
+location:'Chennai, Tamil Nadu',
 type:'two_wheeler',
-status:'Missing'
+status:'Missing', reward: '₹15,000', date: '23 May 2025'
 },
 
 {
 image:'assets/images/demo/apache.png',
 brand:'TVS Apache',
-number:'KA41GH6543',
-location:'Belagavi, Karnataka',
+number:'DL3SFG1122',
+location:'Delhi',
 type:'two_wheeler',
-status:'Missing'
+status:'Missing', reward: '₹20,000', date: '22 May 2025'
 }
 
 ];

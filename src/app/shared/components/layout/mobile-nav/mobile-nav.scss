@@ -6,6 +6,8 @@
 
     flex-direction: column;
 
+    overflow-y: auto;
+
     background: var(--color-background);
 
     color: var(--color-text);
@@ -193,42 +195,6 @@
 }
 
 /* ===============================
-   Theme
-================================ */
-
-.theme-card {
-
-    margin: 18px;
-
-    padding: 16px;
-
-    border-radius: 16px;
-
-    border: 1px solid var(--color-border);
-
-    background: var(--color-surface);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-}
-
-.theme-card div {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    color: var(--color-text);
-
-}
-
-/* ===============================
    Bottom Buttons
 ================================ */
 
@@ -281,5 +247,38 @@
 .dark .mobile-nav::-webkit-scrollbar-thumb {
 
     background: rgba(255,255,255,.20);
+
+}
+
+.bottom-actions .theme-button {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: #172033;
+
+}
+
+.bottom-actions .theme-button mat-icon {
+
+    color: #172033;
+
+}
+
+.bottom-actions .theme-button.dark-theme {
+
+    background: #1e293b;
+    border-color: #475569;
+    color: #facc15;
+
+}
+
+.bottom-actions .theme-button.dark-theme mat-icon {
+
+    color: #facc15;
 
 }

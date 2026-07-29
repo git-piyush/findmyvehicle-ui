@@ -88,43 +88,20 @@
 
     </div>
 
-    <!-- Theme -->
-
-    <div class="theme-card">
-
-        <div>
-
-            <mat-icon>
-
-                {{ themeService.theme() === 'dark'
-                    ? 'light_mode'
-                    : 'dark_mode' }}
-
-            </mat-icon>
-
-            <span>
-
-                {{ themeService.theme() === 'dark'
-                    ? 'Light Theme'
-                    : 'Dark Theme' }}
-
-            </span>
-
-        </div>
-
-        <mat-slide-toggle
-
-            [checked]="themeService.theme() === 'dark'"
-
-            (change)="themeService.toggleTheme()">
-
-        </mat-slide-toggle>
-
-    </div>
-
     <!-- Bottom -->
 
     <div class="bottom-actions">
+
+        <button
+            type="button"
+            class="theme-button"
+            [class.dark-theme]="themeService.theme() === 'dark'"
+            (click)="themeService.toggleTheme()">
+
+            <mat-icon>{{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            <span>{{ themeService.theme() === 'dark' ? 'Light Mode' : 'Dark Mode' }}</span>
+
+        </button>
 
         @if (!loggedIn()) {
 

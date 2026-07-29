@@ -1,125 +1,19 @@
 <section class="hero">
-
-    <div class="hero-content">
-
-        <div class="hero-left">
-
-            <span class="hero-badge">
-                🚗 Trusted Across India
-            </span>
-
-            <h1>
-                Find My Vehicle
-            </h1>
-
-            <h2>
-                India's Trusted Missing & Stolen Vehicle Recovery Platform
-            </h2>
-
-            <p>
-                Search a vehicle instantly or report a missing vehicle to help
-                the community and authorities recover it faster.
-            </p>
-
-            <div class="search-box">
-
-                <mat-form-field appearance="outline">
-
-                    <mat-label>
-                        Vehicle Registration Number
-                    </mat-label>
-
-                    <input
-                        matInput
-                        placeholder="KA01AB1234">
-
-                    <mat-icon matSuffix>
-                        directions_car
-                    </mat-icon>
-
-                </mat-form-field>
-
-                <button
-                    mat-flat-button
-                    color="primary">
-
-                    Search
-
-                </button>
-
-            </div>
-
-            <div class="hero-actions">
-
-                <button
-                    mat-raised-button
-                    color="primary">
-
-                    Report Missing Vehicle
-
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="hero-right">
-
-            <div class="hero-image-placeholder">
-
-                🚘
-
-            </div>
-
-        </div>
-
+  <div class="hero-content">
+    <div class="hero-left">
+      <h1>Find Your Missing<br>Vehicle <span>Faster</span></h1>
+      <p>A community platform that connects vehicle owners, citizens and authorities to help recover missing or stolen vehicles.</p>
+      <div class="hero-actions">
+        <a mat-flat-button class="report-button" routerLink="/report"><mat-icon>warning</mat-icon>Report Missing Vehicle</a>
+        <a mat-flat-button class="search-button" routerLink="/search"><mat-icon>search</mat-icon>Search Missing Vehicles</a>
+      </div>
     </div>
-
+  </div>
 </section>
-
-<div class="hero-actions">
-
-    <button
-        mat-raised-button
-        color="primary">
-
-        Report Missing Vehicle
-
-    </button>
-
-    <button
-        mat-stroked-button>
-
-        Learn More
-
-    </button>
-
-</div>
-
-<div class="hero-stats">
-
-    <div class="stat">
-
-        <h3>12K+</h3>
-
-        <span>Vehicles Reported</span>
-
-    </div>
-
-    <div class="stat">
-
-        <h3>3.8K+</h3>
-
-        <span>Recovered</span>
-
-    </div>
-
-    <div class="stat">
-
-        <h3>25K+</h3>
-
-        <span>Registered Users</span>
-
-    </div>
-
-</div>
+<section class="quick-search"><mat-icon>search</mat-icon><span>Search by Reg. Number, Model, Location...</span><mat-icon class="filter">filter_alt</mat-icon></section>
+<section class="hero-stats">
+  <div class="stat reported"><mat-icon>directions_car</mat-icon><div><b>12,840</b><strong>Vehicles Reported</strong><span>Across India</span></div></div>
+  <div class="stat recovered"><mat-icon>verified_user</mat-icon><div><b>4,128</b><strong>Vehicles Recovered</strong><span>Successfully Recovered</span></div></div>
+  <div class="stat users"><mat-icon>group</mat-icon><div><b>18,900</b><strong>Registered Users</strong><span>Trusted Community</span></div></div>
+  <div class="stat states"><mat-icon>location_on</mat-icon><div><b>31</b><strong>States Covered</strong><span>Pan India Coverage</span></div></div>
+</section>
