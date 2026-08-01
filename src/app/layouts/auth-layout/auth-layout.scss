@@ -230,13 +230,20 @@
 
     display: flex;
 
-    justify-content: center;
-
-    align-items: center;
-
     padding: 48px;
 
     background: var(--color-surface);
+
+}
+
+/* Center the routed page (e.g. login card) in both axes.
+   Using margin:auto instead of align-items/justify-content:center
+   keeps the card fully scrollable when it is taller than the
+   viewport (e.g. on phones) instead of clipping its overflow. */
+
+.auth-right > * {
+
+    margin: auto;
 
 }
 
