@@ -3,14 +3,14 @@
     <div class="hero-left">
       <h1>Find Your Missing<br>Vehicle <span>Faster</span></h1>
       <p>A community platform that connects vehicle owners, citizens and authorities to help recover missing or stolen vehicles.</p>
-      <form class="desktop-search" (ngSubmit)="searchVehicles()">
-        <mat-icon>search</mat-icon>
-        <input name="desktopVehicleSearch" [(ngModel)]="searchTerm" placeholder="Search by Registration Number" aria-label="Search by registration number">
-        <button mat-flat-button type="submit">Search</button>
-      </form>
       <div class="hero-actions">
         <a mat-flat-button class="report-button" routerLink="/report"><mat-icon>warning</mat-icon>Report Missing Vehicle</a>
         <a mat-flat-button class="search-button" routerLink="/search"><mat-icon>search</mat-icon>Search Missing Vehicles</a>
+        <form class="hero-search" (ngSubmit)="searchVehicles()">
+          <mat-icon>search</mat-icon>
+          <input name="heroVehicleSearch" [(ngModel)]="searchTerm" placeholder="Search Reg. Number" aria-label="Search by registration number">
+          <button mat-flat-button type="submit">Search</button>
+        </form>
       </div>
     </div>
   </div>
