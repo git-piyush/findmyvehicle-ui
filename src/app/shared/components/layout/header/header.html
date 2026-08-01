@@ -10,10 +10,10 @@
   </nav>
   <div class="header-right">
     <div class="theme-toggle"><button mat-icon-button class="desktop-theme-button" [class.dark-theme]="themeService.theme() === 'dark'" aria-label="Toggle colour theme" (click)="themeService.toggleTheme()"><mat-icon>{{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon></button></div>
-    @if (!isLoggedIn()) {
+    @if (!loggedIn()) {
       <div class="desktop-auth"><button mat-button routerLink="/login">Login</button><button mat-flat-button color="primary" routerLink="/register">Register</button></div>
     } @else {
-      <a mat-button routerLink="/profile">{{ getUserName() }}</a><button mat-button (click)="logout()">Logout</button>
+      <a mat-button routerLink="/profile">{{ userName() }}</a><button mat-button (click)="logout()">Logout</button>
     }
   </div>
 </header>

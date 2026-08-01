@@ -58,12 +58,10 @@ export class MobileNavComponent {
 
   readonly navigation = PUBLIC_NAVIGATION;
 
-  readonly loggedIn = computed(() =>
-    this.tokenService.hasAccessToken()
-  );
+  readonly loggedIn = this.tokenService.hasToken;
 
   readonly userName = computed(() =>
-    this.tokenService.getUserName() ?? ''
+    this.tokenService.currentUserName() ?? ''
   );
 
   logout(): void {

@@ -44,24 +44,16 @@ export class HeaderComponent {
 
   private readonly router = inject(Router);
 
+  readonly loggedIn = this.tokenService.hasToken;
+
+  readonly userName = this.tokenService.currentUserName;
+
   @Output()
   menuClick = new EventEmitter<void>();
 
   openMenu(): void {
 
     this.menuClick.emit();
-
-  }
-
-  isLoggedIn(): boolean {
-
-    return this.tokenService.hasAccessToken();
-
-  }
-
-  getUserName(): string {
-
-    return this.tokenService.getUserName() ?? '';
 
   }
 

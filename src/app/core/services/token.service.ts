@@ -1,7 +1,9 @@
 import {
   Injectable,
+  PLATFORM_ID,
+  computed,
   inject,
-  PLATFORM_ID
+  signal
 } from '@angular/core';
 
 import {
@@ -23,6 +25,42 @@ export class TokenService {
 
   /* ---------------------------------------------------------- */
 
+  private readonly token = signal<string | null>(
+    this.readFromStorage(this.TOKEN_KEY)
+  );
+
+  private readonly role = signal<string | null>(
+    this.readFromStorage(this.ROLE_KEY)
+  );
+
+  private readonly userName = signal<string | null>(
+    this.readFromStorage(this.USERNAME_KEY)
+  );
+
+  /* Reactive state ------------------------------------------- */
+
+  readonly hasToken = computed(() => this.token() !== null);
+
+  readonly currentToken = this.token.asReadonly();
+
+  readonly currentRole = this.role.asReadonly();
+
+  readonly currentUserName = this.userName.asReadonly();
+
+  /* ---------------------------------------------------------- */
+
+  private readFromStorage(key: string): string | null {
+
+    if (!this.isBrowser()) {
+
+      return null;
+
+    }
+
+    return localStorage.getItem(key);
+
+  }
+
   private isBrowser(): boolean {
 
     return isPlatformBrowser(this.platformId);
@@ -33,30 +71,19 @@ export class TokenService {
 
   saveToken(token: string): void {
 
-    if (!this.isBrowser()) {
+    if (this.isBrowser()) {
 
-      return;
+      localStorage.setItem(this.TOKEN_KEY, token);
 
     }
 
-    localStorage.setItem(
-      this.TOKEN_KEY,
-      token
-    );
+    this.token.set(token);
 
   }
 
   getToken(): string | null {
 
-    if (!this.isBrowser()) {
-
-      return null;
-
-    }
-
-    return localStorage.getItem(
-      this.TOKEN_KEY
-    );
+    return this.token();
 
   }
 
@@ -64,30 +91,19 @@ export class TokenService {
 
   saveRole(role: string): void {
 
-    if (!this.isBrowser()) {
+    if (this.isBrowser()) {
 
-      return;
+      localStorage.setItem(this.ROLE_KEY, role);
 
     }
 
-    localStorage.setItem(
-      this.ROLE_KEY,
-      role
-    );
+    this.role.set(role);
 
   }
 
   getRole(): string | null {
 
-    if (!this.isBrowser()) {
-
-      return null;
-
-    }
-
-    return localStorage.getItem(
-      this.ROLE_KEY
-    );
+    return this.role();
 
   }
 
@@ -95,30 +111,19 @@ export class TokenService {
 
   saveUserName(name: string): void {
 
-    if (!this.isBrowser()) {
+    if (this.isBrowser()) {
 
-      return;
+      localStorage.setItem(this.USERNAME_KEY, name);
 
     }
 
-    localStorage.setItem(
-      this.USERNAME_KEY,
-      name
-    );
+    this.userName.set(name);
 
   }
 
   getUserName(): string | null {
 
-    if (!this.isBrowser()) {
-
-      return null;
-
-    }
-
-    return localStorage.getItem(
-      this.USERNAME_KEY
-    );
+    return this.userName();
 
   }
 
@@ -132,7 +137,7 @@ export class TokenService {
 
   hasAccessToken(): boolean {
 
-    return !!this.getAccessToken();
+    return this.hasToken();
 
   }
 
@@ -140,23 +145,21 @@ export class TokenService {
 
   clear(): void {
 
-    if (!this.isBrowser()) {
+    if (this.isBrowser()) {
 
-      return;
+      localStorage.removeItem(this.TOKEN_KEY);
+
+      localStorage.removeItem(this.ROLE_KEY);
+
+      localStorage.removeItem(this.USERNAME_KEY);
 
     }
 
-    localStorage.removeItem(
-      this.TOKEN_KEY
-    );
+    this.token.set(null);
 
-    localStorage.removeItem(
-      this.ROLE_KEY
-    );
+    this.role.set(null);
 
-    localStorage.removeItem(
-      this.USERNAME_KEY
-    );
+    this.userName.set(null);
 
   }
 
