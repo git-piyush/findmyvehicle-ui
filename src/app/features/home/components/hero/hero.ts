@@ -5,9 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+import { CountUpDirective } from '../../../../shared/directives/count-up.directive';
+import { ScrollRevealDirective } from '../../../../shared/directives/scroll-reveal.directive';
+
 @Component({
   selector: 'app-hero', standalone: true,
-  imports: [RouterLink, FormsModule, MatButtonModule, MatIconModule],
+  imports: [RouterLink, FormsModule, MatButtonModule, MatIconModule, CountUpDirective, ScrollRevealDirective],
   templateUrl: './hero.html', styleUrl: './hero.scss'
 })
 export class HeroComponent {

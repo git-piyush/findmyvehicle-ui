@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { MatIconModule } from '@angular/material/icon';
 
+import { ScrollRevealDirective } from '../../../../shared/directives/scroll-reveal.directive';
+
 @Component({
 
   selector: 'app-cta',
@@ -18,7 +20,8 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     RouterModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    ScrollRevealDirective
   ],
 
   templateUrl: './cta.html',

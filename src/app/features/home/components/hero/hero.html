@@ -1,6 +1,6 @@
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-left">
+    <div class="hero-left" appScrollReveal>
       <h1>Find Your Missing<br>Vehicle <span>Faster</span></h1>
       <p>A community platform that connects vehicle owners, citizens and authorities to help recover missing or stolen vehicles.</p>
       <div class="hero-actions">
@@ -20,9 +20,9 @@
   <input name="vehicleSearch" [(ngModel)]="searchTerm" placeholder="Search by Reg. Number, Model, Location..." aria-label="Search vehicles">
   <button type="submit" aria-label="Search vehicles"><mat-icon>filter_alt</mat-icon></button>
 </form>
-<section class="hero-stats">
-  <div class="stat reported"><mat-icon>directions_car</mat-icon><div><b>12,840</b><strong>Vehicles Reported</strong><span>Across India</span></div></div>
-  <div class="stat recovered"><mat-icon>verified_user</mat-icon><div><b>4,128</b><strong>Vehicles Recovered</strong><span>Successfully Recovered</span></div></div>
-  <div class="stat users"><mat-icon>group</mat-icon><div><b>18,900</b><strong>Registered Users</strong><span>Trusted Community</span></div></div>
-  <div class="stat states"><mat-icon>location_on</mat-icon><div><b>31</b><strong>States Covered</strong><span>Pan India Coverage</span></div></div>
+<section class="hero-stats" appScrollReveal [appScrollRevealDelay]="200">
+  <div class="stat reported"><mat-icon>directions_car</mat-icon><div><b appCountUp>12,840</b><strong>Vehicles Reported</strong><span>Across India</span></div></div>
+  <div class="stat recovered"><mat-icon>verified_user</mat-icon><div><b appCountUp>4,128</b><strong>Vehicles Recovered</strong><span>Successfully Recovered</span></div></div>
+  <div class="stat users"><mat-icon>group</mat-icon><div><b appCountUp>18,900</b><strong>Registered Users</strong><span>Trusted Community</span></div></div>
+  <div class="stat states"><mat-icon>location_on</mat-icon><div><b appCountUp>31</b><strong>States Covered</strong><span>Pan India Coverage</span></div></div>
 </section>
