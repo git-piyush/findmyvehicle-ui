@@ -44,7 +44,7 @@ export class SocialCallback {
     }
 
    setTimeout(() => {
-      this.router.navigate(['/']);
+      this.router.navigate(['/dashboard']);
     }, 100);
 
   }

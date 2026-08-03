@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
 
@@ -38,6 +39,34 @@ export const routes: Routes = [
             .then(c => c.SearchComponent)
       }
     ]
+  },
+
+  // Member area
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    data: {
+      seo: {
+        title: 'Dashboard | Find My Vehicle',
+        description: 'Manage your missing vehicle reports and searches.',
+        robots: 'noindex, nofollow'
+      }
+    },
+    loadComponent: () =>
+      import('./features/dashboard/pages/dashboard/dashboard')
+        .then(c => c.DashboardComponent),
+    children: [
+      {
+        path: 'report-missing',
+        loadComponent: () => import('./features/vehicle-reports/pages/report-missing/report-missing')
+          .then(c => c.ReportMissingComponent)
+      }
+    ]
+  },
+  {
+    path: 'report-missing',
+    redirectTo: 'dashboard/report-missing',
+    pathMatch: 'full'
   },
 
   // Authentication Pages

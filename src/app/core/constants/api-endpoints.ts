@@ -24,7 +24,7 @@ export const ApiEndpoints = {
 
     SEARCH: '/vehicles/search',
 
-    REPORT_MISSING: '/vehicles/report-missing',
+    REPORT_MISSING: '/reportMissingVehicle',
 
     REPORT_FOUND: '/vehicles/report-found',
 

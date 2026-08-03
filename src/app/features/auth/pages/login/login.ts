@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import {
   FormBuilder,
@@ -47,6 +47,8 @@ export class Login {
   private readonly authService = inject(AuthService);
 
 private readonly router = inject(Router);
+
+  private readonly route = inject(ActivatedRoute);
 
   private readonly fb = inject(FormBuilder);
 
@@ -118,7 +120,9 @@ login(): void {
             break;
 
           default:
-            this.router.navigate(['/dashboard']);
+            this.router.navigateByUrl(
+              this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard'
+            );
 
         }
 

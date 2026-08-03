@@ -5,9 +5,19 @@ import {
   getTrustProxyHeaders,
 } from '@netlify/angular-runtime/app-engine.js';
 
+const isNetlifyRuntime = Boolean(
+  process.env['NETLIFY'] || process.env['DEPLOY_ID']
+);
+
 const angularAppEngine = new AngularAppEngine({
-  allowedHosts: getAllowedHosts(),
-  trustProxyHeaders: getTrustProxyHeaders(),
+  // Netlify supplies these deployment variables at runtime. Avoid calling the
+  // Netlify helpers during a local Angular build, where they only emit noise.
+  ...(isNetlifyRuntime
+    ? {
+        allowedHosts: getAllowedHosts(),
+        trustProxyHeaders: getTrustProxyHeaders(),
+      }
+    : {}),
 });
 
 /** Netlify SSR handler. The Angular runtime invokes this for HTML routes. */

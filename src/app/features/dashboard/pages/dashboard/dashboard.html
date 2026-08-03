@@ -1,0 +1,54 @@
+<div class="dashboard-shell" [class.menu-open]="mobileMenuOpen()">
+  <aside class="sidebar">
+    <button class="close-sidebar" (click)="mobileMenuOpen.set(false)" aria-label="Close navigation"><mat-icon>close</mat-icon></button>
+    <a class="brand" routerLink="/dashboard"><span class="brand-mark"><mat-icon>shield</mat-icon></span><span><strong>Find My Vehicle</strong><small>We Locate. You Recover.</small></span></a>
+    <nav class="nav-links" aria-label="Member navigation">
+      <a class="active"><mat-icon>home</mat-icon>Dashboard</a>
+      <a><mat-icon>description</mat-icon>My Reports</a>
+      <a routerLink="/dashboard/report-missing"><mat-icon>add_circle_outline</mat-icon>Add New Report</a>
+      <a><mat-icon>directions_car</mat-icon>My Vehicles</a>
+      <a><mat-icon>search</mat-icon>Search Vehicles</a>
+      <a><mat-icon>notifications_none</mat-icon>Alerts & Updates <b>3</b></a>
+      <a><mat-icon>mail_outline</mat-icon>Messages <b>2</b></a>
+      <a><mat-icon>bookmark_border</mat-icon>Saved Searches</a>
+      <button class="sidebar-profile-toggle" (click)="sidebarProfileOpen.set(!sidebarProfileOpen())" [attr.aria-expanded]="sidebarProfileOpen()"><mat-icon>person_outline</mat-icon>Profile<mat-icon class="profile-chevron">{{ sidebarProfileOpen() ? 'expand_less' : 'expand_more' }}</mat-icon></button>
+      @if (sidebarProfileOpen()) {<div class="sidebar-profile-options"><div><span class="avatar">{{ initials() }}</span><strong>{{ displayName() }}</strong></div><a routerLink="/profile" (click)="mobileMenuOpen.set(false)"><mat-icon>edit</mat-icon>Edit Profile</a><a routerLink="/forgot-password" (click)="mobileMenuOpen.set(false)"><mat-icon>lock_reset</mat-icon>Change Password</a><button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}
+      <a><mat-icon>settings</mat-icon>Settings</a>
+      <a><mat-icon>help_outline</mat-icon>Help & Support</a>
+    </nav>
+    <section class="report-prompt"><mat-icon>add_location_alt</mat-icon><strong>Report a Missing Vehicle</strong><p>Help us recover more vehicles and keep our community safe.</p><button routerLink="/dashboard/report-missing">Report a Vehicle <mat-icon>arrow_forward</mat-icon></button></section>
+    <footer>© 2025 Find My Vehicle<br><span>All rights reserved.</span></footer>
+  </aside>
+  @if (mobileMenuOpen()) {<button class="sidebar-backdrop" (click)="mobileMenuOpen.set(false)" aria-label="Close navigation"></button>}
+
+  <main class="dashboard-main">
+    <header class="topbar">
+      <button class="icon-button menu-button" (click)="mobileMenuOpen.set(!mobileMenuOpen())" aria-label="Toggle navigation"><mat-icon>menu</mat-icon></button>
+      <label class="global-search"><mat-icon>search</mat-icon><input placeholder="Search by vehicle number, make, model..." aria-label="Search vehicles"><mat-icon>search</mat-icon></label>
+      <div class="topbar-actions"><button class="theme-switch" (click)="toggleTheme()" [attr.aria-label]="theme() === 'light' ? 'Enable dark theme' : 'Enable light theme'"><mat-icon>{{ theme() === 'light' ? 'light_mode' : 'dark_mode' }}</mat-icon></button><button class="notification" aria-label="Notifications"><mat-icon>notifications_none</mat-icon><b>3</b></button><div class="profile-menu"><button class="profile-trigger" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()"><span class="avatar">{{ initials() }}</span><span class="account"><strong>{{ displayName() }}</strong><small>Member</small></span><mat-icon>keyboard_arrow_down</mat-icon></button>@if (profileMenuOpen()) {<div class="profile-dropdown"><div class="profile-summary"><span class="avatar">{{ initials() }}</span><span><strong>{{ displayName() }}</strong><small>Member account</small></span></div><a routerLink="/profile" (click)="profileMenuOpen.set(false)"><mat-icon>person_outline</mat-icon>Edit Profile</a><a routerLink="/forgot-password" (click)="profileMenuOpen.set(false)"><mat-icon>lock_reset</mat-icon>Change Password</a><button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}</div></div>
+    </header>
+
+    @if (isChildPage()) {
+      <router-outlet></router-outlet>
+    } @else {
+    <div class="dashboard-content">
+      <section class="page-heading"><div><h1>Welcome back, {{ displayName() }}! <span>👋</span></h1><p>Here's what's happening with your vehicle reports.</p></div><button class="primary-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>Add New Report</button></section>
+
+      <section class="stats-grid">
+        <article class="stat-card green"><span class="stat-icon"><mat-icon>description</mat-icon></span><div><small>Total Reports</small><strong>5</strong><p>All time</p></div><svg viewBox="0 0 220 28" preserveAspectRatio="none"><path d="M0 20 C15 25 19 10 34 16 S52 25 68 12 S88 26 105 15 S121 25 137 16 S152 25 169 9 S187 24 220 18"/></svg></article>
+        <article class="stat-card blue"><span class="stat-icon"><mat-icon>check_circle_outline</mat-icon></span><div><small>Recovered</small><strong>2</strong><p>This is great! 🎉</p></div><svg viewBox="0 0 220 28" preserveAspectRatio="none"><path d="M0 20 C15 24 19 9 34 16 S52 25 68 12 S88 26 105 15 S121 25 137 16 S152 25 169 9 S187 24 220 18"/></svg></article>
+        <article class="stat-card orange"><span class="stat-icon"><mat-icon>schedule</mat-icon></span><div><small>In Progress</small><strong>3</strong><p>Keep going! 💪</p></div><svg viewBox="0 0 220 28" preserveAspectRatio="none"><path d="M0 20 C15 25 19 10 34 16 S52 25 68 12 S88 26 105 15 S121 25 137 16 S152 25 169 9 S187 24 220 18"/></svg></article>
+        <article class="stat-card red"><span class="stat-icon"><mat-icon>close</mat-icon></span><div><small>Closed</small><strong>0</strong><p>No closed reports</p></div><svg viewBox="0 0 220 28" preserveAspectRatio="none"><path d="M0 20 C15 25 19 10 34 16 S52 25 68 12 S88 26 105 15 S121 25 137 16 S152 25 169 9 S187 24 220 18"/></svg></article>
+      </section>
+
+      <section class="quick-actions"><h2>Quick Actions</h2><div class="quick-grid"><button><mat-icon>directions_car</mat-icon>Report Missing<br>Vehicle</button><button><mat-icon>directions_car_filled</mat-icon>Add<br>My Vehicle</button><button><mat-icon>search</mat-icon>Search<br>Vehicles</button><button><mat-icon>notifications_active</mat-icon>View<br>Alerts</button><button><mat-icon>bookmark_border</mat-icon>Saved<br>Searches</button><button><mat-icon>help_outline</mat-icon>Help<br>Center</button></div></section>
+
+      <section class="dashboard-grid">
+        <article class="panel vehicles-panel"><header><h2>Last 3 Recently Missing Vehicles</h2><button>View All</button></header><div class="vehicle-list">@for (vehicle of vehicles; track vehicle.registration; let i = $index) {<button class="vehicle-row" (click)="selectVehicle(i)" [class.selected]="selectedVehicleIndex() === i"><img [src]="vehicle.image" [alt]="vehicle.name"><span><strong>{{ vehicle.name }}</strong><b>{{ vehicle.registration }}</b><small><mat-icon>location_on</mat-icon>{{ vehicle.location }}</small><small><mat-icon>calendar_today</mat-icon>{{ vehicle.reportedAt }}</small></span><em>View Details <mat-icon>chevron_right</mat-icon></em></button>}</div><button class="view-more">View All Recently Missing Vehicles <mat-icon>arrow_forward</mat-icon></button></article>
+
+        <article class="panel search-panel"><section class="vehicle-search"><h2>Search Any Missing Vehicle</h2><div><input #searchBox (input)="query.set(searchBox.value)" (keyup.enter)="search()" placeholder="Enter Registration Number (e.g. KA05JC1234)"><button (click)="search()"><mat-icon>search</mat-icon>Search</button></div><p>Search any reported missing vehicle across our database.</p>@if (searched()) {<small class="search-feedback">Showing the closest matching report.</small>}</section><section class="vehicle-details"><div class="details-heading"><div><h2>Missing Vehicle Details</h2><p>Select a reported vehicle to view details</p></div><select [value]="selectedVehicleIndex()" (change)="selectVehicle(+$any($event.target).value)">@for (vehicle of vehicles; track vehicle.registration; let i = $index) {<option [value]="i">{{ vehicle.registration }} - {{ vehicle.name }}</option>}</select></div><div class="details-content"><img [src]="selectedVehicle.image" [alt]="selectedVehicle.name"><div class="detail-info"><h3>{{ selectedVehicle.name }}</h3><div class="detail-grid"><p><mat-icon>directions_car</mat-icon><span>Registration No.<b>{{ selectedVehicle.registration }}</b></span></p><p><mat-icon>key</mat-icon><span>Chassis No.<b>{{ selectedVehicle.chassis }}</b></span></p><p><mat-icon>location_on</mat-icon><span>Location<b>{{ selectedVehicle.location }}</b></span></p><p><mat-icon>settings</mat-icon><span>Engine No.<b>{{ selectedVehicle.engine }}</b></span></p><p><mat-icon>calendar_today</mat-icon><span>Date & Time Reported<b>{{ selectedVehicle.reportedAt }}</b></span></p><p><mat-icon>palette</mat-icon><span>Color<b>{{ selectedVehicle.color }}</b></span></p></div></div></div><div class="description"><strong>Description</strong><p>{{ selectedVehicle.description }}</p></div><p class="information"><mat-icon>info_outline</mat-icon>If you have any information about this vehicle, please contact your nearest police station.</p></section></article>
+      </section>
+    </div>
+    }
+  </main>
+</div>
