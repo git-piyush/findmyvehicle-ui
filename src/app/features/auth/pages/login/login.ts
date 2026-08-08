@@ -70,7 +70,7 @@ private readonly router = inject(Router);
       '',
       [
         Validators.required,
-        Validators.minLength(6)
+        Validators.minLength(5)
       ]
     ],
 
@@ -107,24 +107,9 @@ login(): void {
 
         console.log(response);
 
-        // Navigate according to role
-
-        switch (response.userIdentity.role) {
-
-          case 'ADMIN':
-            this.router.navigate(['/admin/dashboard']);
-            break;
-
-          case 'POLICE':
-            this.router.navigate(['/police/dashboard']);
-            break;
-
-          default:
-            this.router.navigateByUrl(
-              this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard'
-            );
-
-        }
+        this.router.navigateByUrl(
+          this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard'
+        );
 
       },
 

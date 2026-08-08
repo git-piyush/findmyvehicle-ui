@@ -9,6 +9,7 @@ import {
 import {
   isPlatformBrowser
 } from '@angular/common';
+import { UserIdentity } from '../models/auth/user-identity';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,12 @@ export class TokenService {
   private readonly ROLE_KEY = 'user_role';
 
   private readonly USERNAME_KEY = 'user_name';
+
+  private readonly USER_EMAIL_KEY = 'user_email';
+
+  private readonly USER_ID_KEY = 'user_id';
+
+  private readonly USER_IDENTITY_KEY = 'user_identity';
 
   /* ---------------------------------------------------------- */
 
@@ -37,6 +44,12 @@ export class TokenService {
     this.readFromStorage(this.USERNAME_KEY)
   );
 
+  private readonly userEmail = signal<string | null>(
+    this.readFromStorage(this.USER_EMAIL_KEY)
+  );
+
+  private readonly userId = signal<number | null>(this.readUserId());
+
   /* Reactive state ------------------------------------------- */
 
   readonly hasToken = computed(() => this.token() !== null);
@@ -46,6 +59,10 @@ export class TokenService {
   readonly currentRole = this.role.asReadonly();
 
   readonly currentUserName = this.userName.asReadonly();
+
+  readonly currentUserEmail = this.userEmail.asReadonly();
+
+  readonly currentUserId = this.userId.asReadonly();
 
   /* ---------------------------------------------------------- */
 
@@ -65,6 +82,12 @@ export class TokenService {
 
     return isPlatformBrowser(this.platformId);
 
+  }
+
+  private readUserId(): number | null {
+    const value = this.readFromStorage(this.USER_ID_KEY);
+    const id = value === null ? NaN : Number(value);
+    return Number.isInteger(id) ? id : null;
   }
 
   /* ---------------------------------------------------------- */
@@ -127,6 +150,36 @@ export class TokenService {
 
   }
 
+  saveUserEmail(email: string): void {
+    if (this.isBrowser()) localStorage.setItem(this.USER_EMAIL_KEY, email);
+    this.userEmail.set(email);
+  }
+
+  getUserEmail(): string | null { return this.userEmail(); }
+
+  saveUserId(id: number): void {
+    if (this.isBrowser()) localStorage.setItem(this.USER_ID_KEY, String(id));
+    this.userId.set(id);
+  }
+
+  getUserId(): number | null { return this.userId(); }
+
+  saveUserIdentity(identity: UserIdentity): void {
+    if (this.isBrowser()) localStorage.setItem(this.USER_IDENTITY_KEY, JSON.stringify(identity));
+    this.saveToken(identity.token);
+    this.saveRole(identity.role);
+    this.saveUserName(identity.userName);
+    this.saveUserEmail(identity.email);
+    this.saveUserId(identity.userId);
+  }
+
+  getUserIdentity(): UserIdentity | null {
+    if (!this.isBrowser()) return null;
+    const value = localStorage.getItem(this.USER_IDENTITY_KEY);
+    if (!value) return null;
+    try { return JSON.parse(value) as UserIdentity; } catch { return null; }
+  }
+
   /* ---------------------------------------------------------- */
 
   getAccessToken(): string | null {
@@ -153,6 +206,12 @@ export class TokenService {
 
       localStorage.removeItem(this.USERNAME_KEY);
 
+      localStorage.removeItem(this.USER_EMAIL_KEY);
+
+      localStorage.removeItem(this.USER_ID_KEY);
+
+      localStorage.removeItem(this.USER_IDENTITY_KEY);
+
     }
 
     this.token.set(null);
@@ -160,6 +219,10 @@ export class TokenService {
     this.role.set(null);
 
     this.userName.set(null);
+
+    this.userEmail.set(null);
+
+    this.userId.set(null);
 
   }
 

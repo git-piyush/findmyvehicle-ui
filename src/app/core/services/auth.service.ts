@@ -43,17 +43,7 @@ export class AuthService {
       request
     ).pipe(
       tap(response => {
-        this.tokenService.saveToken(
-          response.userIdentity.token
-        );
-
-        this.tokenService.saveRole(
-          response.userIdentity.role
-        );
-
-        this.tokenService.saveUserName(
-          response.userIdentity.userName
-        );
+        this.tokenService.saveUserIdentity(response.userIdentity);
 
       })
 

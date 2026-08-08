@@ -1,12 +1,15 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { filter, map } from 'rxjs';
+import { filter, finalize, fromEvent, map, Subscription } from 'rxjs';
 
 import { ThemeService } from '../../../../core/services/theme.service';
 import { TokenService } from '../../../../core/services/token.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ProfileService, UserProfileRequest, UserProfileResponse } from '../../../../core/services/profile.service';
 
 type Vehicle = {
   name: string;
@@ -20,18 +23,34 @@ type Vehicle = {
   description: string;
 };
 
+type ProfileForm = {
+  addressId: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatIconModule, RouterLink, RouterOutlet],
+  imports: [FormsModule, MatIconModule, RouterLink, RouterOutlet],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit, OnDestroy {
   private readonly themeService = inject(ThemeService);
   private readonly tokenService = inject(TokenService);
   private readonly authService = inject(AuthService);
+  private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
+  private backNavigationSubscription?: Subscription;
 
   readonly mobileMenuOpen = signal(false);
   readonly selectedVehicleIndex = signal(0);
@@ -39,13 +58,25 @@ export class DashboardComponent {
   readonly searched = signal(false);
   readonly profileMenuOpen = signal(false);
   readonly sidebarProfileOpen = signal(false);
+  readonly editProfileOpen = signal(false);
+  readonly profileSaved = signal(false);
+  readonly profileSaving = signal(false);
+  readonly profileLoading = signal(false);
+  readonly profileError = signal('');
+  readonly profileImage = signal<File | null>(null);
+  readonly profileImagePreview = signal<string | null>(null);
   readonly theme = this.themeService.theme;
   readonly userName = this.tokenService.currentUserName;
+  readonly userEmail = this.tokenService.currentUserEmail;
+  readonly userId = this.tokenService.currentUserId;
   private readonly currentUrl = toSignal(
     this.router.events.pipe(filter(event => event instanceof NavigationEnd), map(() => this.router.url)),
     { initialValue: this.router.url }
   );
   readonly isChildPage = computed(() => this.currentUrl().startsWith('/dashboard/'));
+
+  private savedProfile: ProfileForm = this.createProfile();
+  profile: ProfileForm = { ...this.savedProfile };
 
   readonly vehicles: Vehicle[] = [
     {
@@ -70,9 +101,127 @@ export class DashboardComponent {
 
   get selectedVehicle(): Vehicle { return this.vehicles[this.selectedVehicleIndex()]; }
 
+  ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    window.history.pushState(null, '', window.location.href);
+    this.backNavigationSubscription = fromEvent<PopStateEvent>(window, 'popstate').subscribe(() => {
+      window.history.pushState(null, '', window.location.href);
+    });
+  }
+
+  ngOnDestroy(): void { this.backNavigationSubscription?.unsubscribe(); }
+
   displayName(): string { return this.userName() || 'Member'; }
 
   initials(): string { return this.displayName().split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase(); }
+
+  openEditProfile(): void {
+    this.profileMenuOpen.set(false);
+    this.sidebarProfileOpen.set(false);
+    this.mobileMenuOpen.set(false);
+    this.profileSaved.set(false);
+    this.profileError.set('');
+    const identity = this.tokenService.getUserIdentity();
+    const id = identity?.userId ?? this.userId();
+    if (id === null) {
+      this.profileError.set('Your login session is missing the user ID. Please sign out and sign in again.');
+      this.editProfileOpen.set(true);
+      return;
+    }
+
+    this.profileLoading.set(true);
+    this.editProfileOpen.set(true);
+    this.profileService.getProfile(id)
+      .pipe(finalize(() => this.profileLoading.set(false)))
+      .subscribe({
+        next: response => this.setProfileFromResponse(response),
+        error: error => this.profileError.set(error?.error?.status?.message || error?.error?.message || 'Unable to load your profile. Please try again.')
+      });
+  }
+
+  closeEditProfile(): void {
+    this.editProfileOpen.set(false);
+    this.profileError.set('');
+  }
+
+  closeEditProfileFromBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) this.closeEditProfile();
+  }
+
+  saveProfile(): void {
+    const name = this.profile.fullName.trim();
+    const email = this.profile.email.trim();
+    const identity = this.tokenService.getUserIdentity();
+    const id = identity?.userId ?? this.userId();
+    const authenticatedEmail = identity?.email ?? this.userEmail() ?? email;
+    if (this.profileSaving() || this.profileLoading()) return;
+    if (!name) {
+      this.profileError.set('Enter your full name before saving.');
+      return;
+    }
+    if (!authenticatedEmail) {
+      this.profileError.set('Enter your email address before saving.');
+      return;
+    }
+    if (id === null) {
+      this.profileError.set('Your login session is missing the user ID. Please sign out and sign in again, then save your profile.');
+      return;
+    }
+    this.profile.fullName = name;
+    this.profile.email = authenticatedEmail;
+    this.profileError.set('');
+    this.profileSaving.set(true);
+
+    const request: UserProfileRequest = {
+      id,
+      name,
+      email: authenticatedEmail,
+      phone: this.profile.phone.trim(),
+      address: {
+        id: this.profile.addressId,
+        addressLine1: this.profile.addressLine1.trim(),
+        addressLine2: this.profile.addressLine2.trim(),
+        city: this.profile.city.trim(),
+        state: this.profile.state,
+        pinCode: this.profile.postalCode.trim(),
+        country: this.profile.country.trim()
+      }
+    };
+
+    this.profileService.createProfile(request, this.profileImage())
+      .pipe(finalize(() => this.profileSaving.set(false)))
+      .subscribe({
+        next: () => {
+          this.savedProfile = { ...this.profile };
+          this.tokenService.saveUserName(name);
+          this.tokenService.saveUserEmail(authenticatedEmail);
+          this.profileSaved.set(true);
+          this.editProfileOpen.set(false);
+        },
+        error: error => this.profileError.set(error?.error?.status?.message || error?.error?.message || 'Unable to save your profile. Please try again.')
+      });
+  }
+
+  onProfileImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      this.profileError.set('Please select an image file.');
+      return;
+    }
+    const previousPreview = this.profileImagePreview();
+    if (previousPreview) URL.revokeObjectURL(previousPreview);
+    this.profileImage.set(file);
+    this.profileImagePreview.set(URL.createObjectURL(file));
+    this.profileError.set('');
+  }
+
+  removeProfileImage(): void {
+    const preview = this.profileImagePreview();
+    if (preview) URL.revokeObjectURL(preview);
+    this.profileImage.set(null);
+    this.profileImagePreview.set(null);
+  }
 
   toggleTheme(): void { this.themeService.toggleTheme(); }
 
@@ -87,5 +236,38 @@ export class DashboardComponent {
     );
     if (matchingIndex >= 0) this.selectVehicle(matchingIndex);
     this.searched.set(true);
+  }
+
+  private createProfile(): ProfileForm {
+    return {
+      addressId: 0,
+      fullName: this.userName() || '',
+      email: this.userEmail() || '',
+      phone: '',
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: 'India'
+    };
+  }
+
+  private setProfileFromResponse(response: UserProfileResponse): void {
+    const profile = response.data;
+    const address = profile.address;
+    this.profile = {
+      addressId: address?.id ?? 0,
+      fullName: profile.name ?? '',
+      email: profile.email ?? this.userEmail() ?? '',
+      phone: profile.phone ?? '',
+      addressLine1: address?.addressLine1 ?? '',
+      addressLine2: address?.addressLine2 ?? '',
+      city: address?.city ?? '',
+      state: address?.state ?? '',
+      postalCode: address?.pinCode ?? '',
+      country: address?.country ?? 'India'
+    };
+    this.savedProfile = { ...this.profile };
   }
 }
