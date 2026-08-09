@@ -23,9 +23,10 @@ export class ConfigService {
 
   async loadConfig(): Promise<void> {
 
-    // Skip runtime configuration during SSR / prerender
+    // The browser loads the runtime configuration after hydration. During SSR,
+    // use the safe defaults because there is no browser location or static asset request.
     if (!isPlatformBrowser(this.platformId)) {
-      console.log('Skipping runtime configuration during SSR.');
+      this.config = DEFAULT_CONFIG;
       return;
     }
 
@@ -53,9 +54,7 @@ get apiUrl(): string {
     return DEFAULT_CONFIG.apiUrl;
   }
 
-  return window.location.hostname === 'localhost'
-    ? '/api'
-    : 'https://findmyvehicle.onrender.com/api';
+  return this.configuration.apiUrl;
 
 }
 
@@ -65,9 +64,7 @@ get oauthUrl(): string {
     return DEFAULT_CONFIG.oauthUrl;
   }
 
-  return window.location.hostname === 'localhost'
-    ? ''
-    : 'https://findmyvehicle.onrender.com';
+  return this.configuration.oauthUrl;
 
 }
 
