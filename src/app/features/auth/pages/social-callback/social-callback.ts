@@ -31,6 +31,8 @@ export class SocialCallback {
 
     const username = this.route.snapshot.queryParamMap.get('username');
 
+    const userId = this.route.snapshot.queryParamMap.get('userId');
+
     if (token) {
       this.tokenService.saveToken(token);
     }
@@ -41,6 +43,12 @@ export class SocialCallback {
 
     if (username) {
       this.tokenService.saveUserName(username);
+    }
+
+    const parsedUserId = userId === null ? NaN : Number(userId);
+
+    if (Number.isInteger(parsedUserId) && parsedUserId > 0) {
+      this.tokenService.saveUserId(parsedUserId);
     }
 
    setTimeout(() => {
