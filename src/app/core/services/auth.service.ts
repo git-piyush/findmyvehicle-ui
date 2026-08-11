@@ -53,6 +53,7 @@ export class AuthService {
       request
     ).pipe(
       tap(response => {
+        this.tokenService.saveSocialLogin(false);
         this.tokenService.saveUserIdentity(response.userIdentity);
 
       })

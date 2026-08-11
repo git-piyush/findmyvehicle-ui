@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
@@ -52,6 +52,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
   private backNavigationSubscription?: Subscription;
 
   readonly mobileMenuOpen = signal(false);
@@ -75,6 +76,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly userName = this.tokenService.currentUserName;
   readonly userEmail = this.tokenService.currentUserEmail;
   readonly userId = this.tokenService.currentUserId;
+  readonly isSocialLogin = this.tokenService.isSocialLogin;
   private readonly currentUrl = toSignal(
     this.router.events.pipe(filter(event => event instanceof NavigationEnd), map(() => this.router.url)),
     { initialValue: this.router.url }
@@ -118,6 +120,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void { this.backNavigationSubscription?.unsubscribe(); }
 
+  @HostListener('document:click', ['$event'])
+  closeProfileMenuOnOutsideClick(event: MouseEvent): void {
+    if (!this.profileMenuOpen()) return;
+    const profileMenu = this.elementRef.nativeElement.querySelector('.profile-menu');
+    if (!profileMenu?.contains(event.target as Node)) this.profileMenuOpen.set(false);
+  }
+
   displayName(): string { return this.userName() || 'Member'; }
 
   initials(): string { return this.displayName().split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase(); }
@@ -156,6 +165,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   openChangePassword(): void {
+    if (this.isSocialLogin()) return;
     this.profileMenuOpen.set(false);
     this.sidebarProfileOpen.set(false);
     this.mobileMenuOpen.set(false);
@@ -181,6 +191,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.changePasswordError.set('Complete all password fields.');
       return;
     }
+    if (request.newPassword.length < 5) {
+      this.changePasswordError.set('New password must be at least 5 characters.');
+      return;
+    }
     if (request.newPassword !== request.confirmPassword) {
       this.changePasswordError.set('New password and confirmation do not match.');
       return;
@@ -195,6 +209,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       error: error => this.changePasswordError.set(error?.error?.status?.message || error?.error?.message || 'Unable to change password. Please try again.')
     });
+  }
+
+  isChangePasswordValid(): boolean {
+    const { currentPassword, newPassword, confirmPassword } = this.changePassword;
+    return currentPassword.length > 0 && newPassword.length >= 5 && newPassword === confirmPassword;
   }
 
   saveProfile(): void {

@@ -12,7 +12,7 @@
       <a><mat-icon>mail_outline</mat-icon>Messages <b>2</b></a>
       <a><mat-icon>bookmark_border</mat-icon>Saved Searches</a>
       <button class="sidebar-profile-toggle" (click)="sidebarProfileOpen.set(!sidebarProfileOpen())" [attr.aria-expanded]="sidebarProfileOpen()"><mat-icon>person_outline</mat-icon>Profile<mat-icon class="profile-chevron">{{ sidebarProfileOpen() ? 'expand_less' : 'expand_more' }}</mat-icon></button>
-      @if (sidebarProfileOpen()) {<div class="sidebar-profile-options"><div><span class="avatar">{{ initials() }}</span><strong>{{ displayName() }}</strong></div><button (click)="openEditProfile()"><mat-icon>edit</mat-icon>Edit Profile</button><button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button><button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}
+      @if (sidebarProfileOpen()) {<div class="sidebar-profile-options"><div><span class="avatar">{{ initials() }}</span><strong>{{ displayName() }}</strong></div><button (click)="openEditProfile()"><mat-icon>edit</mat-icon>Edit Profile</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}
       <a><mat-icon>settings</mat-icon>Settings</a>
       <a><mat-icon>help_outline</mat-icon>Help & Support</a>
     </nav>
@@ -25,7 +25,7 @@
     <header class="topbar">
       <button class="icon-button menu-button" (click)="mobileMenuOpen.set(!mobileMenuOpen())" aria-label="Toggle navigation"><mat-icon>menu</mat-icon></button>
       <label class="global-search"><mat-icon>search</mat-icon><input placeholder="Search by vehicle number, make, model..." aria-label="Search vehicles"><mat-icon>search</mat-icon></label>
-      <div class="topbar-actions"><button class="theme-switch" (click)="toggleTheme()" [attr.aria-label]="theme() === 'light' ? 'Enable dark theme' : 'Enable light theme'"><mat-icon>{{ theme() === 'light' ? 'light_mode' : 'dark_mode' }}</mat-icon></button><button class="notification" aria-label="Notifications"><mat-icon>notifications_none</mat-icon><b>3</b></button><div class="profile-menu"><button class="profile-trigger" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()"><span class="avatar">{{ initials() }}</span><span class="account"><strong>{{ displayName() }}</strong><small>Member</small></span><mat-icon>keyboard_arrow_down</mat-icon></button>@if (profileMenuOpen()) {<div class="profile-dropdown"><div class="profile-summary"><span class="avatar">{{ initials() }}</span><span><strong>{{ displayName() }}</strong><small>Member account</small></span></div><button (click)="openEditProfile()"><mat-icon>person_outline</mat-icon>Edit Profile</button><button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button><button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}</div></div>
+      <div class="topbar-actions"><button class="theme-switch" (click)="toggleTheme()" [attr.aria-label]="theme() === 'light' ? 'Enable dark theme' : 'Enable light theme'"><mat-icon>{{ theme() === 'light' ? 'light_mode' : 'dark_mode' }}</mat-icon></button><button class="notification" aria-label="Notifications"><mat-icon>notifications_none</mat-icon><b>3</b></button><div class="profile-menu"><button class="profile-trigger" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()"><span class="avatar">{{ initials() }}</span><span class="account"><strong>{{ displayName() }}</strong><small>Member</small></span><mat-icon>keyboard_arrow_down</mat-icon></button>@if (profileMenuOpen()) {<div class="profile-dropdown"><div class="profile-summary"><span class="avatar">{{ initials() }}</span><span><strong>{{ displayName() }}</strong><small>Member account</small></span></div><button (click)="openEditProfile()"><mat-icon>person_outline</mat-icon>Edit Profile</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}</div></div>
     </header>
 
     @if (isChildPage()) {
@@ -74,12 +74,12 @@
       <form (ngSubmit)="savePassword()" novalidate>
         <section class="profile-section"><div class="form-grid">
           <label class="full-width">Current password<input name="currentPassword" [(ngModel)]="changePassword.currentPassword" type="password" autocomplete="current-password" required></label>
-          <label class="full-width">New password<input name="newPassword" [(ngModel)]="changePassword.newPassword" type="password" autocomplete="new-password" required></label>
+          <label class="full-width">New password<input name="newPassword" [(ngModel)]="changePassword.newPassword" type="password" autocomplete="new-password" minlength="5" required></label>
           <label class="full-width">Confirm new password<input name="confirmPassword" [(ngModel)]="changePassword.confirmPassword" type="password" autocomplete="new-password" required></label>
         </div>
         </section>
         @if (changePasswordError()) {<p class="profile-form-error" role="alert"><mat-icon>error_outline</mat-icon>{{ changePasswordError() }}</p>}
-        <footer><button type="button" class="secondary-button" (click)="closeChangePassword()" [disabled]="changePasswordSaving()">Cancel</button><button type="submit" class="save-profile-button" [disabled]="changePasswordSaving()">@if (changePasswordSaving()) {Saving…} @else {<mat-icon>check</mat-icon>Save}</button></footer>
+        <footer><button type="button" class="secondary-button" (click)="closeChangePassword()" [disabled]="changePasswordSaving()">Cancel</button><button type="submit" class="save-profile-button" [disabled]="changePasswordSaving() || !isChangePasswordValid()">@if (changePasswordSaving()) {Saving…} @else {<mat-icon>check</mat-icon>Save}</button></footer>
       </form>
     </section>
   </div>

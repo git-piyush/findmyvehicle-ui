@@ -25,6 +25,8 @@ export class SocialCallback {
 
   constructor() {
 
+    this.tokenService.saveSocialLogin(true);
+
     const token = this.route.snapshot.queryParamMap.get('token');
 
     const role = this.route.snapshot.queryParamMap.get('role');

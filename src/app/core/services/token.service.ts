@@ -30,6 +30,8 @@ export class TokenService {
 
   private readonly USER_IDENTITY_KEY = 'user_identity';
 
+  private readonly SOCIAL_LOGIN_KEY = 'is_social_login';
+
   /* ---------------------------------------------------------- */
 
   private readonly token = signal<string | null>(
@@ -50,6 +52,8 @@ export class TokenService {
 
   private readonly userId = signal<number | null>(this.readUserId());
 
+  private readonly socialLogin = signal(this.readFromStorage(this.SOCIAL_LOGIN_KEY) === 'true');
+
   /* Reactive state ------------------------------------------- */
 
   readonly hasToken = computed(() => this.token() !== null);
@@ -63,6 +67,8 @@ export class TokenService {
   readonly currentUserEmail = this.userEmail.asReadonly();
 
   readonly currentUserId = this.userId.asReadonly();
+
+  readonly isSocialLogin = this.socialLogin.asReadonly();
 
   /* ---------------------------------------------------------- */
 
@@ -164,6 +170,11 @@ export class TokenService {
 
   getUserId(): number | null { return this.userId(); }
 
+  saveSocialLogin(isSocialLogin: boolean): void {
+    if (this.isBrowser()) localStorage.setItem(this.SOCIAL_LOGIN_KEY, String(isSocialLogin));
+    this.socialLogin.set(isSocialLogin);
+  }
+
   saveUserIdentity(identity: UserIdentity): void {
     if (this.isBrowser()) localStorage.setItem(this.USER_IDENTITY_KEY, JSON.stringify(identity));
     this.saveToken(identity.token);
@@ -212,6 +223,8 @@ export class TokenService {
 
       localStorage.removeItem(this.USER_IDENTITY_KEY);
 
+      localStorage.removeItem(this.SOCIAL_LOGIN_KEY);
+
     }
 
     this.token.set(null);
@@ -223,6 +236,8 @@ export class TokenService {
     this.userEmail.set(null);
 
     this.userId.set(null);
+
+    this.socialLogin.set(false);
 
   }
 
