@@ -11,6 +11,16 @@ import { RegisterRequest } from '../models/auth/register-request';
 import { RegisterResponse } from '../models/auth/register-response';
 import { LoginRequest } from '../models/auth/login-request';
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  status: { status: number; message: string; };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -49,6 +59,10 @@ export class AuthService {
 
     );
 
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<ChangePasswordResponse> {
+    return this.http.post<ChangePasswordResponse>(`${this.api}/auth/change-password`, request);
   }
 
   logout(): void {

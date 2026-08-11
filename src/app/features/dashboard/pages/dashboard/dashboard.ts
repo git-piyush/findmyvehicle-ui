@@ -8,7 +8,7 @@ import { filter, finalize, fromEvent, map, Subscription } from 'rxjs';
 
 import { ThemeService } from '../../../../core/services/theme.service';
 import { TokenService } from '../../../../core/services/token.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService, ChangePasswordRequest, ChangePasswordResponse } from '../../../../core/services/auth.service';
 import { ProfileService, UserProfileRequest, UserProfileResponse } from '../../../../core/services/profile.service';
 
 type Vehicle = {
@@ -35,6 +35,8 @@ type ProfileForm = {
   postalCode: string;
   country: string;
 };
+
+type ChangePasswordForm = ChangePasswordRequest;
 
 @Component({
   selector: 'app-dashboard',
@@ -65,6 +67,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly profileError = signal('');
   readonly profileImage = signal<File | null>(null);
   readonly profileImagePreview = signal<string | null>(null);
+  readonly changePasswordOpen = signal(false);
+  readonly changePasswordSaving = signal(false);
+  readonly changePasswordError = signal('');
+  readonly changePasswordSuccess = signal('');
   readonly theme = this.themeService.theme;
   readonly userName = this.tokenService.currentUserName;
   readonly userEmail = this.tokenService.currentUserEmail;
@@ -77,6 +83,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private savedProfile: ProfileForm = this.createProfile();
   profile: ProfileForm = { ...this.savedProfile };
+  changePassword: ChangePasswordForm = this.createChangePasswordForm();
 
   readonly vehicles: Vehicle[] = [
     {
@@ -146,6 +153,48 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   closeEditProfileFromBackdrop(event: MouseEvent): void {
     if (event.target === event.currentTarget) this.closeEditProfile();
+  }
+
+  openChangePassword(): void {
+    this.profileMenuOpen.set(false);
+    this.sidebarProfileOpen.set(false);
+    this.mobileMenuOpen.set(false);
+    this.changePassword = this.createChangePasswordForm();
+    this.changePasswordError.set('');
+    this.changePasswordOpen.set(true);
+  }
+
+  closeChangePassword(): void {
+    if (this.changePasswordSaving()) return;
+    this.changePasswordOpen.set(false);
+    this.changePasswordError.set('');
+  }
+
+  closeChangePasswordFromBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) this.closeChangePassword();
+  }
+
+  savePassword(): void {
+    const request: ChangePasswordRequest = { ...this.changePassword };
+    if (this.changePasswordSaving()) return;
+    if (!request.currentPassword || !request.newPassword || !request.confirmPassword) {
+      this.changePasswordError.set('Complete all password fields.');
+      return;
+    }
+    if (request.newPassword !== request.confirmPassword) {
+      this.changePasswordError.set('New password and confirmation do not match.');
+      return;
+    }
+    this.changePasswordError.set('');
+    this.changePasswordSaving.set(true);
+    this.authService.changePassword(request).pipe(finalize(() => this.changePasswordSaving.set(false))).subscribe({
+      next: (response: ChangePasswordResponse) => {
+        this.changePasswordSuccess.set(response?.status?.message || 'Password changed successfully.');
+        this.changePasswordOpen.set(false);
+        this.changePassword = this.createChangePasswordForm();
+      },
+      error: error => this.changePasswordError.set(error?.error?.status?.message || error?.error?.message || 'Unable to change password. Please try again.')
+    });
   }
 
   saveProfile(): void {
@@ -251,6 +300,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       postalCode: '',
       country: 'India'
     };
+  }
+
+  private createChangePasswordForm(): ChangePasswordForm {
+    return { currentPassword: '', newPassword: '', confirmPassword: '' };
   }
 
   private setProfileFromResponse(response: UserProfileResponse): void {
