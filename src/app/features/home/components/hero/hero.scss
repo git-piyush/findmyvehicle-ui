@@ -1,6 +1,6 @@
 :host { display:block; background:var(--landing-bg); }
-.hero { position:relative; isolation:isolate; min-height:440px; padding:64px 8vw 86px; overflow:hidden; color:#fff; background:linear-gradient(90deg,rgba(2,15,38,.98) 0%,rgba(3,22,56,.91) 42%,rgba(3,16,37,.3) 100%),url('/assets/images/demo/creta.png') center/cover; }
-.hero::before { content:''; position:absolute; z-index:-1; inset:0; background:radial-gradient(circle at 72% 20%,rgba(59,130,246,.34),transparent 28%),linear-gradient(120deg,rgba(25,118,210,.2),transparent 48%); }
+.hero { position:relative; isolation:isolate; min-height:440px; padding:64px 8vw 86px; overflow:hidden; color:#fff; background:linear-gradient(90deg,rgba(2,13,32,.99) 0%,rgba(3,20,50,.94) 38%,rgba(3,15,37,.55) 63%,rgba(3,15,37,.14) 100%),url('/assets/images/landing/vehicle-recovery-night.jpg') center 57%/cover; }
+.hero::before { content:''; position:absolute; z-index:-1; inset:0; background:radial-gradient(circle at 78% 52%,rgba(14,165,233,.28),transparent 26%),radial-gradient(circle at 20% 100%,rgba(37,99,235,.24),transparent 38%),linear-gradient(180deg,rgba(2,12,30,.08),rgba(2,12,30,.34)); }
 .hero-content { max-width:1280px; margin:auto; }.hero-left { max-width:720px; }
 .hero-eyebrow { display:inline-flex; align-items:center; gap:7px; margin-bottom:18px; padding:7px 11px; border:1px solid rgba(147,197,253,.35); border-radius:999px; background:rgba(8,40,89,.48); color:#dbeafe; font-size:13px; font-weight:600; backdrop-filter:blur(8px); }.hero-eyebrow mat-icon{width:16px;height:16px;font-size:16px;color:#7dd3fc}
 h1 { margin:0 0 16px; font-size:clamp(42px,4.1vw,62px); line-height:1.08; letter-spacing:-1.6px; }.hero h1 span{color:#60a5fa}.hero p{max-width:510px;margin:0;color:#e2eaf7;font-size:17px;line-height:1.65}
