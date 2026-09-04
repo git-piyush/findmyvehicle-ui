@@ -250,7 +250,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         addressLine1: this.profile.addressLine1.trim(),
         addressLine2: this.profile.addressLine2.trim(),
         city: this.profile.city.trim(),
-        state: this.profile.state,
+        // The API expects a State enum.  JSON.stringify omits undefined, whereas
+        // an empty string cannot be deserialized into that enum.
+        state: this.profile.state || undefined,
         pinCode: this.profile.postalCode.trim(),
         country: this.profile.country.trim()
       }
