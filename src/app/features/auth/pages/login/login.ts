@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoginRequest } from '../../../../core/models/auth/login-request';
 import { ConfigService } from '../../../../core/services/config.service';
@@ -51,6 +52,8 @@ private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   private readonly fb = inject(FormBuilder);
+
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly hidePassword = signal(true);
 
@@ -107,6 +110,11 @@ login(): void {
 
         console.log(response);
 
+        if (response.status?.status < 200 || response.status?.status >= 300) {
+          this.showError(response.status?.message ?? 'Invalid email or password.');
+          return;
+        }
+
         this.router.navigateByUrl(
           this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard'
         );
@@ -117,9 +125,9 @@ login(): void {
 
         console.error(error);
 
-        // We'll replace this with Snackbar later
-        alert(
+        this.showError(
           error?.error?.status?.message ??
+          error?.error?.message ??
           'Invalid email or password.'
         );
 
@@ -127,6 +135,18 @@ login(): void {
 
     });
 
+}
+
+private showError(message: string): void {
+  this.snackBar.open(
+    message,
+          'Close',
+          {
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          }
+        );
 }
 
 googleLogin(): void {

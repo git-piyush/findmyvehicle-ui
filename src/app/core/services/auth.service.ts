@@ -53,6 +53,10 @@ export class AuthService {
       request
     ).pipe(
       tap(response => {
+        if (response.status?.status < 200 || response.status?.status >= 300) {
+          return;
+        }
+
         this.tokenService.saveSocialLogin(false);
         this.tokenService.saveUserIdentity(response.userIdentity);
 
