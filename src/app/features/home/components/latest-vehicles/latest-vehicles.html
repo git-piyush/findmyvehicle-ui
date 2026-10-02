@@ -1,5 +1,28 @@
 <section class="latest-section"><div class="container">
-  <div class="section-heading"><div><span class="eyebrow">Active alerts</span><h2>Recently Missing Vehicles</h2></div><a routerLink="/search">View all <mat-icon>arrow_forward</mat-icon></a></div>
-  <div class="vehicle-grid">@for(vehicle of vehicles;track vehicle.number){
-    <article class="vehicle-card"><div class="vehicle-image"><img [src]="vehicle.image" [alt]="vehicle.brand"><span class="vehicle-status">Missing</span></div><div class="vehicle-info"><div class="vehicle-title"><div><h3>{{vehicle.number}}</h3><p>{{vehicle.brand}}</p></div><button aria-label="View vehicle" routerLink="/search"><mat-icon>arrow_outward</mat-icon></button></div><div class="details"><span><mat-icon>location_on</mat-icon>{{vehicle.location}}</span><span><mat-icon>calendar_today</mat-icon>{{vehicle.date}}</span></div><b>Reward <em>{{vehicle.reward}}</em></b></div><a class="view-details" routerLink="/search">View details</a></article>
-  }</div></div></section>
+  <div class="section-heading"><div><span class="eyebrow">{{recentMissingVehicles?.totalCount ?? 0}} active alerts</span><h2>{{recentMissingVehicles?.title || 'Recently Missing Vehicles'}}</h2></div>@if (recentMissingVehicles?.viewAllUrl) {<a [routerLink]="recentMissingVehicles?.viewAllUrl">View all <mat-icon>arrow_forward</mat-icon></a>}</div>
+  @if (recentMissingVehicles?.items?.length) {
+    <div class="vehicle-grid">@for(vehicle of recentMissingVehicles?.items;track vehicle.id ?? vehicle.registrationNumber){
+      <article class="vehicle-card">
+        <div class="vehicle-image">
+          @if (vehicle.imageUrls?.[0]; as imageUrl) {
+            <img [src]="imageUrl" [alt]="vehicle.displayName || vehicle.registrationNumber || 'Vehicle'">
+          } @else {
+            <mat-icon style="display:grid;place-items:center;width:100%;height:194px;font-size:48px;background:var(--color-surface-hover);color:var(--color-text-secondary)">directions_car</mat-icon>
+          }
+          <span class="vehicle-status">{{vehicle.status}}</span>
+        </div>
+        <div class="vehicle-info">
+          <div class="vehicle-title"><div><h3>{{vehicle.registrationNumber}}</h3><p>{{vehicle.displayName || vehicle.model || vehicle.brand}}</p></div><button aria-label="View vehicle" [routerLink]="vehicle.detailUrl || '/search'"><mat-icon>arrow_outward</mat-icon></button></div>
+          <div class="details">
+            @if (vehicle.missingLocation?.displayName) {<span><mat-icon>location_on</mat-icon>{{vehicle.missingLocation?.displayName}}</span>}
+            @if (vehicle.missigngDateTime) {<span><mat-icon>calendar_today</mat-icon>{{vehicle.missigngDateTime | date:'dd MMM yyyy'}}</span>}
+          </div>
+          @if (vehicle.reward?.amount != null) {<b>Reward <em>{{vehicle.reward?.amount | currency:(vehicle.reward?.currency || 'INR'):'symbol':'1.0-2':'en-IN'}}</em></b>}
+        </div>
+        <a class="view-details" [routerLink]="vehicle.detailUrl || '/search'">View details</a>
+      </article>
+    }</div>
+  } @else {
+    <p class="empty-state">No missing vehicles have been reported yet.</p>
+  }
+</div></section>

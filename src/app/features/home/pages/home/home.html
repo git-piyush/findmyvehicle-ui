@@ -1,5 +1,11 @@
-<app-hero></app-hero>
+@let dashboardData = dashboardData$ | async;
+<app-hero
+	[header]="dashboardData?.header ?? null"
+	[statistics]="dashboardData?.statisticsDtos ?? []">
+</app-hero>
 
-<app-latest-vehicles></app-latest-vehicles>
+<app-latest-vehicles
+	[recentMissingVehicles]="dashboardData?.recentMissingVehicles ?? null">
+</app-latest-vehicles>
 <app-how-it-works></app-how-it-works>
 <app-cta></app-cta>

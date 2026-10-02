@@ -1,30 +1,38 @@
 <section class="hero">
+  @if (header; as content) {
   <div class="hero-content">
     <div class="hero-left" appScrollReveal>
-      <span class="hero-eyebrow"><mat-icon>verified</mat-icon> India's community recovery network</span>
-      <h1>Find Your Missing<br>Vehicle <span>Faster</span></h1>
-      <p>A community platform that connects vehicle owners, citizens and authorities to help recover missing or stolen vehicles.</p>
+      <span class="hero-eyebrow"><mat-icon>verified</mat-icon>{{content.eyebrow}}</span>
+      <h1>{{titleBeforeHighlight}}<span>{{highlightedTitleWord}}</span>{{titleAfterHighlight}}</h1>
+      <p>{{content.description}}</p>
       <div class="hero-actions">
-        <a mat-flat-button class="report-button" routerLink="/report"><mat-icon>warning</mat-icon>Report Missing Vehicle</a>
-        <a mat-flat-button class="search-button" routerLink="/search"><mat-icon>search</mat-icon>Search Missing Vehicles</a>
+        <a mat-flat-button class="report-button" [routerLink]="content.reportMissingUrl"><mat-icon>warning</mat-icon>Report Missing Vehicle</a>
+        <a mat-flat-button class="search-button" [routerLink]="content.searchVehiclesUrl"><mat-icon>search</mat-icon>Search Missing Vehicles</a>
         <form class="hero-search" (ngSubmit)="searchVehicles()">
           <mat-icon>search</mat-icon>
-          <input name="heroVehicleSearch" [(ngModel)]="searchTerm" placeholder="Search Reg. Number" aria-label="Search by registration number">
+          <input name="heroVehicleSearch" [(ngModel)]="searchTerm" [placeholder]="content.searchPlaceholder" aria-label="Search by registration number">
           <button mat-flat-button type="submit">Search</button>
         </form>
       </div>
-      <div class="hero-proof"><span class="proof-avatars"><i>R</i><i>A</i><i>S</i></span><span><strong>18,900+ people</strong> helping keep roads safer</span></div>
+      @if (content.communityProof; as proof) {
+        <div class="hero-proof"><span><strong>{{proof.count}}</strong> {{proof.label}}</span></div>
+      }
     </div>
   </div>
+  }
 </section>
 <form class="quick-search" (ngSubmit)="searchVehicles()">
   <mat-icon>search</mat-icon>
-  <input name="vehicleSearch" [(ngModel)]="searchTerm" placeholder="Search by Reg. Number, Model, Location..." aria-label="Search vehicles">
+  <input name="vehicleSearch" [(ngModel)]="searchTerm" [placeholder]="header?.searchPlaceholder" aria-label="Search vehicles">
   <button type="submit" aria-label="Search vehicles"><mat-icon>filter_alt</mat-icon></button>
 </form>
-<section class="hero-stats" appScrollReveal [appScrollRevealDelay]="200">
-  <div class="stat reported"><mat-icon>directions_car</mat-icon><div><b appCountUp>12,840</b><strong>Vehicles Reported</strong><span>Across India</span></div></div>
-  <div class="stat recovered"><mat-icon>verified_user</mat-icon><div><b appCountUp>4,128</b><strong>Vehicles Recovered</strong><span>Successfully Recovered</span></div></div>
-  <div class="stat users"><mat-icon>group</mat-icon><div><b appCountUp>18,900</b><strong>Registered Users</strong><span>Trusted Community</span></div></div>
-  <div class="stat states"><mat-icon>location_on</mat-icon><div><b appCountUp>31</b><strong>States Covered</strong><span>Pan India Coverage</span></div></div>
-</section>
+@if (statistics.length) {
+  <section class="hero-stats" appScrollReveal [appScrollRevealDelay]="200">
+    @for (stat of statistics; track stat.key; let index = $index) {
+      <div class="stat" [class.reported]="index === 0" [class.recovered]="index === 1" [class.users]="index === 2" [class.states]="index === 3">
+        <mat-icon>{{stat.icon}}</mat-icon>
+        <div><b>{{stat.value | number}}</b><strong>{{stat.label}}</strong><span>{{stat.description}}</span></div>
+      </div>
+    }
+  </section>
+}
