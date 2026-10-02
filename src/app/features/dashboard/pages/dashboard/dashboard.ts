@@ -1,5 +1,5 @@
 import { Component, computed, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -10,17 +10,31 @@ import { ThemeService } from '../../../../core/services/theme.service';
 import { TokenService } from '../../../../core/services/token.service';
 import { AuthService, ChangePasswordRequest, ChangePasswordResponse } from '../../../../core/services/auth.service';
 import { ProfileService, UserProfileRequest, UserProfileResponse } from '../../../../core/services/profile.service';
+import { ApiService } from '../../../../core/services/api.service';
 
-type Vehicle = {
-  name: string;
-  registration: string;
-  location: string;
-  reportedAt: string;
-  image: string;
-  chassis: string;
-  engine: string;
-  color: string;
-  description: string;
+type DashboardVehicle = {
+  id: number;
+  name: string | null;
+  registration: string | null;
+  location: string | null;
+  reportedAt: string | null;
+  image: string | null;
+  chassis: string | null;
+  engine: string | null;
+  color: string | null;
+  description: string | null;
+  status: string | null;
+};
+
+type DashboardPayload = {
+  user: { id: number; name: string; email: string; profileImageUrl: string | null };
+  summary: { totalReports: number; recovered: number; inProgress: number; closed: number };
+  activity: { unreadNotifications: number; unreadMessages: number };
+  recentMissingVehicles: DashboardVehicle[];
+};
+
+type DashboardResponse = {
+  data: DashboardPayload;
 };
 
 type ProfileForm = {
@@ -41,7 +55,7 @@ type ChangePasswordForm = ChangePasswordRequest;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, MatIconModule, RouterLink, RouterOutlet],
+  imports: [DatePipe, FormsModule, MatIconModule, RouterLink, RouterOutlet],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -50,12 +64,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly tokenService = inject(TokenService);
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
+  private readonly apiService = inject(ApiService);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private backNavigationSubscription?: Subscription;
 
   readonly mobileMenuOpen = signal(false);
+  readonly dashboardData = signal<DashboardPayload | null>(null);
+  readonly dashboardLoading = signal(false);
+  readonly dashboardError = signal('');
+  readonly vehicles = computed(() => this.dashboardData()?.recentMissingVehicles ?? []);
   readonly selectedVehicleIndex = signal(0);
   readonly query = signal('');
   readonly searched = signal(false);
@@ -87,31 +106,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
   profile: ProfileForm = { ...this.savedProfile };
   changePassword: ChangePasswordForm = this.createChangePasswordForm();
 
-  readonly vehicles: Vehicle[] = [
-    {
-      name: 'Bajaj Pulsar NS200', registration: 'KA05JC1234', location: 'Bengaluru, Karnataka',
-      reportedAt: '28 May 2025, 10:30 AM', image: 'assets/images/demo/apache.png',
-      chassis: 'MD2A36FYKJEC12345', engine: 'DKYCE1234567', color: 'Black & Red',
-      description: 'Bike was parked near Koramangala 4th Block, Bengaluru. Last seen in the evening.'
-    },
-    {
-      name: 'Hyundai i20', registration: 'KA03MH5678', location: 'Mysuru, Karnataka',
-      reportedAt: '27 May 2025, 08:15 PM', image: 'assets/images/demo/creta.png',
-      chassis: 'MALBM51BLMM452001', engine: 'G4LCKM234567', color: 'Polar White',
-      description: 'Vehicle was last seen around Kuvempunagar, Mysuru.'
-    },
-    {
-      name: 'Honda Activa 6G', registration: 'KA02JK0101', location: 'Tumakuru, Karnataka',
-      reportedAt: '26 May 2025, 04:45 PM', image: 'assets/images/demo/honda.png',
-      chassis: 'ME4JF954LM8020101', engine: 'JF95E8020101', color: 'Pearl White',
-      description: 'Scooter was reported missing from the town centre parking area.'
-    }
-  ];
-
-  get selectedVehicle(): Vehicle { return this.vehicles[this.selectedVehicleIndex()]; }
+  get selectedVehicle(): DashboardVehicle | null {
+    return this.vehicles()[this.selectedVehicleIndex()] ?? null;
+  }
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.dashboardLoading.set(true);
+    this.apiService.get<DashboardResponse>('/dashboard')
+      .pipe(finalize(() => this.dashboardLoading.set(false)))
+      .subscribe({
+        next: response => this.dashboardData.set(response.data),
+        error: error => this.dashboardError.set(
+          error?.error?.status?.message || 'Unable to load dashboard data. Please try again.'
+        )
+      });
+
     window.history.pushState(null, '', window.location.href);
     this.backNavigationSubscription = fromEvent<PopStateEvent>(window, 'popstate').subscribe(() => {
       window.history.pushState(null, '', window.location.href);
@@ -127,7 +137,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!profileMenu?.contains(event.target as Node)) this.profileMenuOpen.set(false);
   }
 
-  displayName(): string { return this.userName() || 'Member'; }
+  displayName(): string { return this.dashboardData()?.user.name || this.userName() || 'Member'; }
 
   initials(): string { return this.displayName().split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase(); }
 
@@ -301,8 +311,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   search(): void {
     const term = this.query().trim().toLowerCase();
-    const matchingIndex = this.vehicles.findIndex(vehicle =>
-      vehicle.registration.toLowerCase().includes(term) || vehicle.name.toLowerCase().includes(term)
+    const matchingIndex = this.vehicles().findIndex(vehicle =>
+      vehicle.registration?.toLowerCase().includes(term) || vehicle.name?.toLowerCase().includes(term)
     );
     if (matchingIndex >= 0) this.selectVehicle(matchingIndex);
     this.searched.set(true);
