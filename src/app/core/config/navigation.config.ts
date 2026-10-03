@@ -9,21 +9,9 @@ export const PUBLIC_NAVIGATION: NavItem[] = [
   },
 
   {
-    label: 'Search Vehicles',
-    icon: 'search',
-    route: '/search'
-  },
-
-  {
-    label: 'Report Missing',
-    icon: 'report',
-    route: '/report'
-  },
-
-  {
     label: 'How It Works',
     icon: 'lightbulb',
-    route: '/#how-it-works'
+    route: '/how-it-works'
   },
 
   {

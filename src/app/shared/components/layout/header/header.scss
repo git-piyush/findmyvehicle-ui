@@ -144,35 +144,96 @@
 =========================== */
 
 .theme-toggle {
-
     display: flex;
     align-items: center;
-
 }
 
-.theme-toggle mat-icon {
-    color: var(--theme-icon-color);
+.theme-switch {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 68px;
+    height: 38px;
+    padding: 0 8px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #e7f2ff, #d8e7fa);
+    box-shadow: inset 0 1px 2px #172b4214, 0 2px 7px #12243a14;
+    cursor: pointer;
+    transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
 
-.desktop-theme-button {
-    width: 40px !important;
-    height: 40px !important;
-    border: 1px solid rgba(255, 255, 255, .26) !important;
-    border-radius: 50% !important;
-    background: rgba(255, 255, 255, .12) !important;
+.theme-switch:hover {
+    border-color: #8fb4e2;
+    box-shadow: 0 3px 10px #12243a20;
 }
 
-.desktop-theme-button mat-icon {
-    color: #172033 !important;
+.theme-switch:focus-visible {
+    outline: 3px solid #3182f666;
+    outline-offset: 3px;
 }
 
-.desktop-theme-button.dark-theme {
-    background: rgba(250, 204, 21, .16) !important;
-    border-color: rgba(250, 204, 21, .6) !important;
+.switch-icon {
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    color: #667b94;
 }
 
-.desktop-theme-button.dark-theme mat-icon {
-    color: #facc15 !important;
+.switch-icon mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+}
+
+.switch-icon.sun {
+    color: #b66a08;
+}
+
+.switch-thumb {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #ffffffc9;
+    border-radius: 50%;
+    color: #b66a08;
+    background: #fff;
+    box-shadow: 0 2px 5px #172b4230;
+    transition: transform .25s ease, color .25s ease, background .25s ease;
+}
+
+.switch-thumb mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+}
+
+.theme-switch.is-dark {
+    border-color: #34465e;
+    background: linear-gradient(135deg, #192d48, #0b1b30);
+}
+
+.theme-switch.is-dark .switch-thumb {
+    transform: translateX(30px);
+    border-color: #63758a;
+    color: #f5c451;
+    background: #24364c;
+}
+
+.theme-switch.is-dark .switch-icon.sun {
+    color: #8093aa;
+}
+
+.theme-switch.is-dark .switch-icon.moon {
+    color: #d7e7ff;
 }
 
 .moon-icon,
@@ -276,4 +337,3 @@
     }
 
 }
-

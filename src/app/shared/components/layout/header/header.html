@@ -9,7 +9,7 @@
     }
   </nav>
   <div class="header-right">
-    <div class="theme-toggle"><button mat-icon-button class="desktop-theme-button" [class.dark-theme]="themeService.theme() === 'dark'" aria-label="Toggle colour theme" (click)="themeService.toggleTheme()"><mat-icon>{{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon></button></div>
+    <div class="theme-toggle"><button type="button" class="theme-switch" [class.is-dark]="themeService.theme() === 'dark'" role="switch" [attr.aria-checked]="themeService.theme() === 'dark'" [attr.aria-label]="themeService.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'" (click)="themeService.toggleTheme()"><span class="switch-icon sun"><mat-icon>light_mode</mat-icon></span><span class="switch-icon moon"><mat-icon>dark_mode</mat-icon></span><span class="switch-thumb"><mat-icon>{{ themeService.theme() === 'dark' ? 'dark_mode' : 'light_mode' }}</mat-icon></span></button></div>
     @if (!loggedIn()) {
       <div class="desktop-auth"><button mat-button routerLink="/login">Login</button><button mat-flat-button color="primary" routerLink="/register">Register</button></div>
     } @else {
