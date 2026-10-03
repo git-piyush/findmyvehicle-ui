@@ -19,6 +19,7 @@ export class HeroComponent {
   @Input() statistics: HomeStatisticData[] = [];
 
   searchTerm = '';
+  searchExpanded = true;
 
   constructor(private readonly router: Router) {}
 

@@ -1,11 +1,11 @@
-<main class="vehicles-page">
+<main class="listing-page">
   <header class="page-heading">
     <div><span class="eyebrow">Your garage</span><h1>My Vehicles</h1><p>Vehicles listed by you, with their identification and report status.</p></div>
-    <a class="add-vehicle" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>List a vehicle</a>
+    <a class="listing-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>List a vehicle</a>
   </header>
 
   <section class="filter-card" aria-label="Filter your vehicles">
-    <div class="filter-title"><span><mat-icon>tune</mat-icon></span><div><h2>Filter vehicles</h2><p>Find a listed vehicle by registration, model, or reported location.</p></div></div>
+    <div class="filter-heading"><span class="filter-icon"><mat-icon>tune</mat-icon></span><div><h2>Filter vehicles</h2><p>Find a listed vehicle by registration, model, or reported location.</p></div></div>
     <form class="filter-grid" (submit)="$event.preventDefault(); search()">
       <label>Registration number<input [value]="regNumber()" (input)="regNumber.set($any($event.target).value)" placeholder="e.g. KA00112212"></label>
       <label>Vehicle model<input [value]="model()" (input)="model.set($any($event.target).value)" placeholder="e.g. Honda Activa"></label>
@@ -16,7 +16,7 @@
   </section>
 
   <section class="vehicle-section" aria-labelledby="vehicle-list-heading">
-    <header class="list-heading"><div><h2 id="vehicle-list-heading">{{ searched() ? 'Vehicle search results' : 'Vehicles listed by you' }}</h2><p>{{ totalElements() }} vehicle{{ totalElements() === 1 ? '' : 's' }} found</p></div>@if (totalPages() > 0) {<span>Up to {{ pageSize }} per page</span>}</header>
+    <header class="list-heading"><div><h2 id="vehicle-list-heading">{{ searched() ? 'Vehicle search results' : 'Vehicles listed by you' }}</h2><p>{{ totalElements() }} vehicle{{ totalElements() === 1 ? '' : 's' }} found</p></div><div class="list-controls"><label>Per page<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Vehicles per page"><option value="2">2</option><option value="4">4</option><option value="6">6</option></select></label><nav class="list-pagination" aria-label="My vehicle pages"><button type="button" aria-label="Previous page" (click)="loadVehicles(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>Page <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="Next page" (click)="loadVehicles(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div></header>
     @if (loading()) {
       <div class="state-card" role="status"><mat-icon>hourglass_top</mat-icon><p>Loading your vehicles…</p></div>
     } @else if (error()) {
@@ -25,13 +25,13 @@
       <div class="vehicle-list">
         @for (vehicle of vehicles(); track vehicle.id) {
           <article class="vehicle-card">
-            <div class="vehicle-main">
+            <div class="vehicle-top">
               @if (vehicle.imageUrls?.[0]; as imageUrl) {<img class="vehicle-image" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber">}
               @else {<span class="vehicle-image placeholder"><mat-icon>directions_car</mat-icon></span>}
-              <div class="vehicle-name"><span class="eyebrow">{{ vehicle.vehicleCompany || 'Vehicle' }}{{ vehicle.type ? ' · ' + vehicle.type : '' }}</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3><p class="reg-number">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
+              <div class="vehicle-heading"><span class="eyebrow">{{ vehicle.vehicleCompany || 'Vehicle' }}{{ vehicle.type ? ' · ' + vehicle.type : '' }}</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3><p class="registration">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
               <a class="details-link" [routerLink]="['/dashboard/my-reports']" [queryParams]="{ regNumber: vehicle.regNumber }">View report details<mat-icon>arrow_forward</mat-icon></a>
             </div>
-            <div class="vehicle-fields">
+            <div class="vehicle-meta">
               <div><mat-icon>confirmation_number</mat-icon><span><small>Chassis number</small><strong>{{ vehicle.chassisNumber || 'Not provided' }}</strong></span></div>
               <div><mat-icon>settings</mat-icon><span><small>Engine number</small><strong>{{ vehicle.engineNumber || 'Not provided' }}</strong></span></div>
               <div><mat-icon>person_outline</mat-icon><span><small>Listed owner</small><strong>{{ vehicle.owner || 'Not provided' }}</strong></span></div>
@@ -51,9 +51,6 @@
           </article>
         }
       </div>
-      @if (totalPages() > 1) {
-        <nav class="pagination" aria-label="My vehicle pages"><button type="button" (click)="loadVehicles(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon>Previous</button><span>Page <strong>{{ page() + 1 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" (click)="loadVehicles(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()">Next<mat-icon>chevron_right</mat-icon></button></nav>
-      }
     } @else {
       <div class="state-card empty-state"><span class="empty-icon"><mat-icon>directions_car</mat-icon></span><h3>{{ searched() ? 'No vehicles match those filters' : 'No vehicles listed yet' }}</h3><p>{{ searched() ? 'Try adjusting your filters and search again.' : 'Vehicles that you report will appear here.' }}</p><a routerLink="/dashboard/report-missing">List a vehicle</a></div>
     }

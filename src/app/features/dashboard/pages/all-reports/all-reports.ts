@@ -88,7 +88,7 @@ export class AllReportsComponent implements OnInit {
   readonly error = signal('');
   readonly searched = signal(false);
   readonly page = signal(0);
-  readonly pageSize = 10;
+  readonly pageSize = signal(4);
   readonly totalPages = signal(0);
   readonly totalElements = signal(0);
 
@@ -118,7 +118,7 @@ export class AllReportsComponent implements OnInit {
 
   loadReports(page: number): void {
     this.requestSubscription?.unsubscribe();
-    let params = new HttpParams().set('page', page).set('size', this.pageSize);
+    let params = new HttpParams().set('page', page).set('size', this.pageSize());
     const filters = [
       ['regNumber', this.regNumber()],
       ['model', this.model()],
@@ -155,6 +155,13 @@ export class AllReportsComponent implements OnInit {
           );
         }
       });
+  }
+
+  updatePageSize(value: string): void {
+    const pageSize = Number(value);
+    if (pageSize !== 2 && pageSize !== 4 && pageSize !== 6) return;
+    this.pageSize.set(pageSize);
+    this.loadReports(0);
   }
 
   joinValues(...values: (string | null)[]): string {

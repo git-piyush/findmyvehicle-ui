@@ -10,11 +10,18 @@
       }
       <p>{{ header?.description || 'When a vehicle goes missing, time matters. Report it, share the details, and help owners reconnect with what matters.' }}</p>
 
-      <form class="hero-search" (ngSubmit)="searchVehicles()">
-        <mat-icon>search</mat-icon>
-        <input name="heroVehicleSearch" [(ngModel)]="searchTerm" [placeholder]="header?.searchPlaceholder || 'Enter a vehicle registration number'" aria-label="Search by registration number">
-        <button type="submit"><span>Search</span><mat-icon>arrow_forward</mat-icon></button>
-      </form>
+      <button class="search-toggle" type="button" aria-controls="hero-search-panel" [attr.aria-expanded]="searchExpanded" (click)="searchExpanded = !searchExpanded">
+        <span><mat-icon>search</mat-icon>Search a vehicle</span><mat-icon class="toggle-chevron">{{ searchExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      <div id="hero-search-panel" class="search-panel" [class.is-open]="searchExpanded" [attr.aria-hidden]="!searchExpanded" [attr.inert]="searchExpanded ? null : ''">
+        <div class="search-panel-inner">
+          <form class="hero-search" (ngSubmit)="searchVehicles()">
+            <mat-icon>search</mat-icon>
+            <input name="heroVehicleSearch" [(ngModel)]="searchTerm" [placeholder]="header?.searchPlaceholder || 'Enter a vehicle registration number'" aria-label="Search by registration number">
+            <button type="submit"><span>Search</span><mat-icon>arrow_forward</mat-icon></button>
+          </form>
+        </div>
+      </div>
       <div class="hero-actions">
         <a class="primary-action" routerLink="/dashboard/report-missing"><mat-icon>campaign</mat-icon>Report a missing vehicle</a>
         <a class="secondary-action" routerLink="/search">Browse missing vehicles<mat-icon>arrow_outward</mat-icon></a>

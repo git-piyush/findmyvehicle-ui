@@ -1,11 +1,11 @@
-<main class="reports-page">
-  <header class="reports-heading">
+<main class="listing-page">
+  <header class="page-heading">
     <div>
       <span class="eyebrow">Your activity</span>
       <h1>My Reports</h1>
       <p>Review each missing incident you have reported and its associated vehicle.</p>
     </div>
-    <a class="new-report-link" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>Report a vehicle</a>
+    <a class="listing-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>Report a vehicle</a>
   </header>
 
   <section class="filter-card" aria-label="Filter reports">
@@ -25,10 +25,10 @@
     </form>
   </section>
 
-  <section class="reports-section" aria-labelledby="reports-list-heading">
+  <section aria-labelledby="reports-list-heading">
     <header class="list-heading">
       <div><h2 id="reports-list-heading">{{ searched() ? 'Missing report results' : 'Your missing reports' }}</h2><p>{{ reports().length }} missing report{{ reports().length === 1 ? '' : 's' }} on this page · {{ totalElements() }} matching vehicle{{ totalElements() === 1 ? '' : 's' }} total</p></div>
-      @if (totalPages() > 0) {<span class="page-size-label">Showing up to {{ pageSize }} vehicles per page</span>}
+      <div class="list-controls"><label>Per page<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Vehicles per page"><option value="2">2</option><option value="4">4</option><option value="6">6</option></select></label><nav class="list-pagination" aria-label="My report pages"><button type="button" aria-label="Previous page" (click)="loadReports(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>Page <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="Next page" (click)="loadReports(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div>
     </header>
 
     @if (loading()) {
@@ -41,56 +41,46 @@
           @let vehicle = entry.vehicle;
           @let detail = entry.detail;
           <article class="report-card">
-            <div class="vehicle-summary">
+            <div class="report-top">
               @if (vehicle.imageUrls?.[0]; as imageUrl) {
-                <img class="vehicle-photo" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber">
+                <img class="vehicle-image" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber">
               } @else {
-                <span class="vehicle-photo-placeholder"><mat-icon>directions_car</mat-icon></span>
+                <span class="vehicle-image placeholder"><mat-icon>directions_car</mat-icon></span>
               }
-              <div class="vehicle-identity">
+              <div class="vehicle-heading">
                 <span class="eyebrow">Missing report</span>
                 <h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3>
                 <p class="registration">{{ vehicle.regNumber }}</p>
-                <div class="vehicle-tags">
-                  <span class="status-tag" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>
+                <div class="badges">
+                  <span class="status" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>
                   @if (vehicle.type) {<span>{{ vehicle.type }}</span>}
                   @if (vehicle.color) {<span>{{ vehicle.color }}</span>}
                 </div>
               </div>
-              <a class="details-link" [routerLink]="['/dashboard/vehicle', vehicle.regNumber]">View details <mat-icon>arrow_forward</mat-icon></a>
+              <a class="details-link" [routerLink]="['/dashboard/vehicle', vehicle.regNumber]">View details<mat-icon>arrow_forward</mat-icon></a>
             </div>
 
-            <div class="vehicle-meta">
+            <div class="report-meta">
               <div><mat-icon>confirmation_number</mat-icon><span><small>Chassis number</small><strong>{{ vehicle.chassisNumber || 'Not provided' }}</strong></span></div>
               <div><mat-icon>settings</mat-icon><span><small>Engine number</small><strong>{{ vehicle.engineNumber || 'Not provided' }}</strong></span></div>
               <div><mat-icon>person_outline</mat-icon><span><small>Owner</small><strong>{{ vehicle.owner || 'Not provided' }}</strong></span></div>
               <div><mat-icon>call</mat-icon><span><small>Contact</small><strong>{{ vehicle.ownerMobile || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>event</mat-icon><span><small>Missing since</small><strong>{{ detail.missingDate ? (detail.missingDate | date:'dd MMM yyyy') : 'Date not provided' }}{{ detail.missingTime ? ' · ' + detail.missingTime : '' }}</strong></span></div>
+              <div><mat-icon>workspace_premium</mat-icon><span><small>Reward</small><strong>{{ detail.reward || 'Not specified' }}</strong></span></div>
             </div>
 
-            <section class="missing-detail">
-              <header><div><span class="missing-icon"><mat-icon>location_on</mat-icon></span><div><h4>Missing details</h4><p>{{ detail.missingDate ? (detail.missingDate | date:'dd MMM yyyy') : 'Date not provided' }}{{ detail.missingTime ? ' at ' + detail.missingTime : '' }}</p></div></div>
-                @if (detail.reward) {<span class="reward-tag"><mat-icon>workspace_premium</mat-icon>Reward {{ detail.reward }}</span>}
-              </header>
-              <div class="missing-grid">
-                <div class="wide-field"><small>Last seen address</small><strong>{{ detail.missingAddress || 'Not provided' }}</strong></div>
+            <div class="location-panel">
+                <div><mat-icon>location_on</mat-icon><span><small>Last seen</small><strong>{{ detail.missingAddress || 'Address not provided' }}</strong></span></div>
                 <div><small>City / district</small><strong>{{ joinValues(detail.city, detail.district) }}</strong></div>
                 <div><small>State / country</small><strong>{{ joinValues(detail.state, detail.country) }}</strong></div>
                 <div><small>PIN code</small><strong>{{ detail.pinCode || 'Not provided' }}</strong></div>
                 @if (detail.foundDate) {<div><small>Found date</small><strong>{{ detail.foundDate | date:'dd MMM yyyy' }}</strong></div>}
-              </div>
-              @if (detail.description) {<p class="description"><strong>Description</strong>{{ detail.description }}</p>}
-            </section>
+            </div>
+            @if (detail.description) {<p class="description"><strong>Report description</strong>{{ detail.description }}</p>}
           </article>
         }
       </div>
 
-      @if (totalPages() > 1) {
-        <nav class="pagination" aria-label="My report pages">
-          <button type="button" (click)="loadReports(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon>Previous</button>
-          <span>Page <strong>{{ page() + 1 }}</strong> of <strong>{{ totalPages() }}</strong></span>
-          <button type="button" (click)="loadReports(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()">Next<mat-icon>chevron_right</mat-icon></button>
-        </nav>
-      }
     } @else {
       <div class="state-card empty-state"><span class="empty-icon"><mat-icon>description</mat-icon></span><h3>{{ searched() ? 'No missing reports match those filters' : 'No missing reports yet' }}</h3><p>{{ searched() ? 'Try changing or clearing your filters.' : 'Missing reports you submit will appear here, separate from your vehicle list.' }}</p>@if (!searched()) {<a routerLink="/dashboard/report-missing">Create a missing report</a>}</div>
     }
