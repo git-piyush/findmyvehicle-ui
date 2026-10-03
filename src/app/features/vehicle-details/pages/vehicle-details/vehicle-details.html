@@ -81,7 +81,7 @@
           <h2>Have information?</h2>
           <p>Contact the owner or share where you saw this vehicle.</p>
           @if (item.ownerEmail) {
-            <a class="primary-action" [href]="notifyOwnerHref()"><mat-icon>mail_outline</mat-icon>Notify Owner</a>
+            <a class="primary-action" [href]="notifyOwnerHref()" target="_blank" rel="noopener noreferrer"><mat-icon>mail_outline</mat-icon>Notify Owner</a>
             <div class="action-divider"><span>OR</span></div>
             <form (ngSubmit)="sendSighting()">
               <h3>Seen At</h3>

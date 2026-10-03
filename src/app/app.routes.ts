@@ -83,6 +83,32 @@ export const routes: Routes = [
             .then(c => c.VehicleDetailsComponent)
       },
       {
+        path: 'my-reports',
+        data: {
+          seo: {
+            title: 'My Reports | Find My Vehicle',
+            description: 'View and manage the missing vehicle reports you have submitted.',
+            robots: 'noindex, nofollow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/dashboard/pages/my-reports/my-reports')
+            .then(c => c.MyReportsComponent)
+      },
+      {
+        path: 'my-vehicles',
+        data: {
+          seo: {
+            title: 'My Vehicles | Find My Vehicle',
+            description: 'View the vehicles you have registered with Find My Vehicle.',
+            robots: 'noindex, nofollow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/dashboard/pages/my-vehicles/my-vehicles')
+            .then(c => c.MyVehiclesComponent)
+      },
+      {
         path: 'report-missing',
         loadComponent: () => import('./features/vehicle-reports/pages/report-missing/report-missing')
           .then(c => c.ReportMissingComponent)

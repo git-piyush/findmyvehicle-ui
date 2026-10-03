@@ -1,0 +1,142 @@
+import { HttpParams } from '@angular/common/http';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
+import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { finalize, Subscription } from 'rxjs';
+
+import { ApiService } from '../../../../core/services/api.service';
+
+type VehicleMissingReport = {
+  missingDate: string | null;
+  missingTime: string | null;
+  city: string | null;
+  district: string | null;
+  state: string | null;
+  pinCode: string | null;
+  missingAddress: string | null;
+  vehicleStatus: string | null;
+  reward: string | null;
+};
+
+type UserVehicle = {
+  id: number;
+  regNumber: string;
+  chassisNumber: string | null;
+  engineNumber: string | null;
+  owner: string | null;
+  ownerMobile: string | null;
+  color: string | null;
+  type: string | null;
+  vehicleCompany: string | null;
+  vehicleStatus: string | null;
+  vehicleModel: string | null;
+  imageUrls: string[] | null;
+  missingDetails: VehicleMissingReport[] | null;
+};
+
+type UserVehiclesResponse = {
+  status: { status: number; message: string };
+  data: {
+    content: UserVehicle[];
+    number: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    first: boolean;
+    last: boolean;
+    empty: boolean;
+  };
+};
+
+@Component({
+  selector: 'app-my-vehicles',
+  standalone: true,
+  imports: [DatePipe, MatIconModule, RouterLink],
+  templateUrl: './my-vehicles.html',
+  styleUrl: './my-vehicles.scss'
+})
+export class MyVehiclesComponent implements OnInit {
+  private readonly apiService = inject(ApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
+  private requestSubscription?: Subscription;
+
+  readonly regNumber = signal('');
+  readonly model = signal('');
+  readonly missingCity = signal('');
+  readonly pinCode = signal('');
+  readonly vehicles = signal<UserVehicle[]>([]);
+  readonly loading = signal(false);
+  readonly error = signal('');
+  readonly searched = signal(false);
+  readonly page = signal(0);
+  readonly pageSize = 10;
+  readonly totalPages = signal(0);
+  readonly totalElements = signal(0);
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) this.loadVehicles(0);
+  }
+
+  search(): void {
+    this.searched.set(true);
+    this.loadVehicles(0);
+  }
+
+  clearFilters(): void {
+    this.regNumber.set('');
+    this.model.set('');
+    this.missingCity.set('');
+    this.pinCode.set('');
+    this.searched.set(false);
+    this.loadVehicles(0);
+  }
+
+  loadVehicles(page: number): void {
+    this.requestSubscription?.unsubscribe();
+    let params = new HttpParams().set('page', page).set('size', this.pageSize);
+    const filters = [
+      ['regNumber', this.regNumber()],
+      ['model', this.model()],
+      ['missingCity', this.missingCity()],
+      ['pinCode', this.pinCode()]
+    ] as const;
+    for (const [name, value] of filters) {
+      if (value.trim()) params = params.set(name, value.trim());
+    }
+
+    this.loading.set(true);
+    this.error.set('');
+    this.requestSubscription = this.apiService.get<UserVehiclesResponse>('/vehicles/reported-by-me', params)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe({
+        next: response => {
+          this.vehicles.set(response.data.content ?? []);
+          this.page.set(response.data.number);
+          this.totalPages.set(response.data.totalPages);
+          this.totalElements.set(response.data.totalElements);
+        },
+        error: error => {
+          this.vehicles.set([]);
+          this.totalPages.set(0);
+          this.totalElements.set(0);
+          this.error.set(
+            error?.error?.status?.message ||
+            error?.error?.message ||
+            'Unable to load your vehicles. Please try again.'
+          );
+        }
+      });
+  }
+
+  latestReportLocation(report: VehicleMissingReport): string {
+    return [report.missingAddress, report.city, report.district, report.state]
+      .filter((value): value is string => !!value?.trim())
+      .join(', ') || 'Location unavailable';
+  }
+}

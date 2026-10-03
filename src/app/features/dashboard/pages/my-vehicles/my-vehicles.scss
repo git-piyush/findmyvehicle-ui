@@ -1,0 +1,71 @@
+:host{display:block;color:var(--color-text)}
+*{box-sizing:border-box}
+.vehicles-page{max-width:1500px;margin:0 auto;padding:28px 30px 44px}
+.page-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}
+.eyebrow{color:var(--color-primary);font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+.page-heading h1{margin:5px 0;font-size:27px;letter-spacing:-.5px}
+.page-heading p,.filter-title p,.list-heading p{margin:0;color:var(--color-text-secondary);font-size:13px}
+.add-vehicle,.search-button,.details-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:8px;color:#fff;background:#008c4b;font:inherit;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;cursor:pointer}
+.add-vehicle{min-height:41px;padding:0 13px}
+.add-vehicle mat-icon,.search-button mat-icon,.details-link mat-icon{width:17px;height:17px;font-size:17px}
+.filter-card,.vehicle-card,.state-card{border:1px solid var(--color-border);border-radius:13px;background:var(--color-surface);box-shadow:0 3px 12px var(--card-shadow)}
+.filter-card{margin-bottom:22px;padding:19px}
+.filter-title{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+.filter-title>span,.empty-icon{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:10px;color:#008c4b;background:#e7f8ef}
+.filter-title h2,.list-heading h2{margin:0 0 3px;font-size:16px}
+.filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;align-items:end;gap:11px}
+.filter-grid label{display:grid;gap:6px;color:var(--color-text-secondary);font-size:11px;font-weight:700}
+.filter-grid input{width:100%;height:38px;padding:0 10px;border:1px solid var(--color-border);border-radius:7px;outline-color:#009a50;color:var(--color-text);background:var(--color-background);font:inherit;font-size:12px}
+.filter-actions{display:flex;gap:7px}
+.filter-actions button{height:38px;padding:0 11px;border-radius:7px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.clear-button{border:1px solid var(--color-border);color:var(--color-text-secondary);background:var(--color-surface)}
+.search-button{padding:0 11px!important}
+.filter-actions button:disabled{cursor:wait;opacity:.6}
+.list-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:11px}
+.list-heading>span{color:var(--color-text-secondary);font-size:11px}
+.vehicle-list{display:grid;gap:13px}
+.vehicle-card{overflow:hidden;padding:17px 19px}
+.vehicle-main{display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--color-border)}
+.vehicle-image{display:grid;place-items:center;flex:0 0 94px;width:94px;height:80px;border-radius:9px;background:var(--color-surface-hover);object-fit:cover}
+.vehicle-image.placeholder{color:var(--color-text-secondary)}
+.vehicle-image.placeholder mat-icon{font-size:34px}
+.vehicle-name{min-width:0;flex:1}
+.vehicle-name h3{margin:3px 0;font-size:17px}
+.reg-number{margin:0;color:var(--color-text-secondary);font-size:12px;font-weight:700;letter-spacing:.04em}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.badges span{padding:4px 8px;border-radius:999px;color:var(--color-text-secondary);background:var(--color-surface-hover);font-size:10px;font-weight:700}
+.badges .status{color:#9e3131;background:#ffebee}
+.badges .status.found{color:#087943;background:#e7f8ef}
+.details-link{min-height:36px;padding:0 11px}
+.details-link:hover,.add-vehicle:hover,.search-button:hover{background:#007440}
+.vehicle-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;padding:14px 0}
+.vehicle-fields>div{display:flex;align-items:center;gap:7px;min-width:0}
+.vehicle-fields>div>mat-icon{flex:0 0 17px;color:var(--color-primary);font-size:17px}
+.vehicle-fields span{display:grid;min-width:0;gap:3px}
+.vehicle-fields small{color:var(--color-text-secondary);font-size:10px}
+.vehicle-fields strong{overflow-wrap:anywhere;font-size:11px}
+.report-summary{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:8px;color:#087943;background:#e9f8ef}
+.report-summary>mat-icon{flex:0 0 18px;font-size:18px}
+.report-summary>span{display:grid;flex:1;gap:3px;min-width:0}
+.report-summary strong{font-size:11px}
+.report-summary small{overflow:hidden;color:#47665a;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.report-summary>a{display:flex;align-items:center;gap:3px;color:#087943;font-size:10px;font-weight:800;text-decoration:none;white-space:nowrap}
+.report-summary>a mat-icon{font-size:16px}
+.report-summary.no-reports{color:var(--color-text-secondary);background:var(--color-surface-hover)}
+.report-summary.no-reports small{color:var(--color-text-secondary)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:18px;margin:18px 0}
+.pagination>span{color:var(--color-text-secondary);font-size:12px}
+.pagination>span strong{color:var(--color-text)}
+.pagination button{display:flex;align-items:center;gap:5px;min-height:36px;padding:0 11px;border:1px solid var(--color-border);border-radius:7px;color:var(--color-text);background:var(--color-surface);font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.pagination button:disabled{cursor:default;opacity:.45}
+.pagination button mat-icon{width:17px;height:17px;font-size:17px}
+.state-card{display:grid;justify-items:center;padding:36px 18px;text-align:center}
+.state-card>mat-icon{color:var(--color-primary);font-size:30px}
+.state-card p{margin:7px 0;color:var(--color-text-secondary);font-size:13px}
+.state-card button,.empty-state>a{margin-top:8px;padding:8px 12px;border:0;border-radius:7px;color:#fff;background:#008c4b;font:inherit;font-size:12px;font-weight:700;text-decoration:none;cursor:pointer}
+.empty-icon{width:48px;height:48px}
+.empty-icon mat-icon{font-size:24px}
+.empty-state h3{margin:12px 0 0;font-size:16px}
+.error-state{color:#af2632}
+@media(max-width:1050px){.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-actions{grid-column:span 2;justify-content:flex-end}.vehicle-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.vehicles-page{padding:22px 15px 32px}.page-heading h1{font-size:23px}.filter-card{padding:15px}.filter-grid{grid-template-columns:1fr;gap:10px}.filter-actions{grid-column:auto}.filter-actions button{flex:1}.vehicle-card{padding:13px}.vehicle-image{flex-basis:68px;width:68px;height:66px}.vehicle-name h3{font-size:15px}.details-link{padding:0 8px;font-size:10px}.vehicle-fields{gap:12px}.report-summary{align-items:flex-start}.report-summary>a{align-self:center}}

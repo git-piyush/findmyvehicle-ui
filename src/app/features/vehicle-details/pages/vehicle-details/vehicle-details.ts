@@ -129,10 +129,27 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   }
 
   notifyOwnerHref(): string {
-    const ownerEmail = this.vehicle()?.ownerEmail;
-    if (!ownerEmail) return '';
-    const registration = this.vehicle()?.regNumber ?? '';
-    return `mailto:${ownerEmail}?subject=${encodeURIComponent(`Information about your vehicle ${registration}`)}`;
+    const vehicle = this.vehicle();
+    if (!vehicle?.ownerEmail) return '';
+
+    const params = new URLSearchParams({
+      view: 'cm',
+      fs: '1',
+      to: vehicle.ownerEmail,
+      su: `Notification about your vehicle ${vehicle.regNumber}`,
+      body: [
+        `Hello${vehicle.owner ? ` ${vehicle.owner}` : ''},`,
+        '',
+        `I am contacting you to notify you that your vehicle with registration number ${vehicle.regNumber} is listed as missing on Find My Vehicle.`,
+        '',
+        'Please review the report and take any appropriate action. If the vehicle has already been recovered, please update its status.',
+        '',
+        'Regards,',
+        'A Find My Vehicle community member'
+      ].join('\n')
+    });
+
+    return `https://mail.google.com/mail/?${params.toString()}`;
   }
 
   sendSighting(): void {
