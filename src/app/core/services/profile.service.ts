@@ -26,7 +26,9 @@ export interface UserProfileResponse {
     status: number;
     message: string;
   };
-  data: UserProfileRequest;
+  data: UserProfileRequest & {
+    profileImageUrl: string | null;
+  };
 }
 
 @Injectable({ providedIn: 'root' })

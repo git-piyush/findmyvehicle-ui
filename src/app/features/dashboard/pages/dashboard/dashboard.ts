@@ -1,5 +1,6 @@
-import { Component, computed, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, ElementRef, HostBinding, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
+import { HttpParams } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -24,6 +25,58 @@ type DashboardVehicle = {
   color: string | null;
   description: string | null;
   status: string | null;
+  owner?: string | null;
+  ownerMobile?: string | null;
+  type?: string | null;
+  vehicleCompany?: string | null;
+};
+
+type VehicleLookupMissingDetail = {
+  missingDate: string | null;
+  missingTime: string | null;
+  country: string | null;
+  state: string | null;
+  district: string | null;
+  city: string | null;
+  pinCode: string | null;
+  missingAddress: string | null;
+  description: string | null;
+  vehicleStatus: string | null;
+};
+
+type VehicleLookupData = {
+  id: number;
+  regNumber: string;
+  chassisNumber: string | null;
+  engineNumber: string | null;
+  owner: string | null;
+  ownerMobile: string | null;
+  color: string | null;
+  type: string | null;
+  vehicleCompany: string | null;
+  vehicleStatus: string | null;
+  vehicleModel: string | null;
+  imageUrls: string[] | null;
+  missingDetails: VehicleLookupMissingDetail[] | null;
+};
+
+type VehicleLookupResponse = {
+  status: { status: number; message: string };
+  data: VehicleLookupData;
+};
+
+type VehicleSearchResponse = {
+  status: { status: number; message: string };
+  data: {
+    content: VehicleLookupData[];
+    number: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    first: boolean;
+    last: boolean;
+    empty: boolean;
+  };
 };
 
 type DashboardPayload = {
@@ -51,6 +104,7 @@ type ProfileForm = {
 };
 
 type ChangePasswordForm = ChangePasswordRequest;
+type VehicleSearchType = 'regNumber' | 'model' | 'missingCity' | 'pinCode';
 
 @Component({
   selector: 'app-dashboard',
@@ -69,6 +123,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private backNavigationSubscription?: Subscription;
+  private searchRequestSubscription?: Subscription;
+  private globalSearchSubscription?: Subscription;
 
   readonly mobileMenuOpen = signal(false);
   readonly dashboardData = signal<DashboardPayload | null>(null);
@@ -78,6 +134,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly selectedVehicleIndex = signal(0);
   readonly query = signal('');
   readonly searched = signal(false);
+  readonly searchLoading = signal(false);
+  readonly searchError = signal('');
+  readonly searchResult = signal<DashboardVehicle | null>(null);
+  readonly globalQuery = signal('');
+  readonly globalSearchType = signal<VehicleSearchType>('regNumber');
+  readonly globalSearchActive = signal(false);
+  readonly globalSearchLoading = signal(false);
+  readonly globalSearchError = signal('');
+  readonly globalSearchResults = signal<DashboardVehicle[]>([]);
+  readonly globalSearchSelectedIndex = signal(0);
+  readonly globalSearchPage = signal(0);
+  readonly globalSearchPageSize = 3;
+  readonly globalSearchTotalPages = signal(0);
+  readonly globalSearchTotalElements = signal(0);
   readonly profileMenuOpen = signal(false);
   readonly sidebarProfileOpen = signal(false);
   readonly editProfileOpen = signal(false);
@@ -87,6 +157,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly profileError = signal('');
   readonly profileImage = signal<File | null>(null);
   readonly profileImagePreview = signal<string | null>(null);
+  readonly profileImageUrl = signal<string | null>(null);
   readonly changePasswordOpen = signal(false);
   readonly changePasswordSaving = signal(false);
   readonly changePasswordError = signal('');
@@ -107,7 +178,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   changePassword: ChangePasswordForm = this.createChangePasswordForm();
 
   get selectedVehicle(): DashboardVehicle | null {
-    return this.vehicles()[this.selectedVehicleIndex()] ?? null;
+    if (this.globalSearchActive()) {
+      return this.globalSearchResults()[this.globalSearchSelectedIndex()] ?? null;
+    }
+    return this.searched()
+      ? this.searchResult()
+      : this.vehicles()[this.selectedVehicleIndex()] ?? null;
   }
 
   ngOnInit(): void {
@@ -116,7 +192,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.apiService.get<DashboardResponse>('/dashboard')
       .pipe(finalize(() => this.dashboardLoading.set(false)))
       .subscribe({
-        next: response => this.dashboardData.set(response.data),
+        next: response => {
+          this.dashboardData.set(response.data);
+          this.profileImageUrl.set(response.data.user.profileImageUrl);
+        },
         error: error => this.dashboardError.set(
           error?.error?.status?.message || 'Unable to load dashboard data. Please try again.'
         )
@@ -128,7 +207,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void { this.backNavigationSubscription?.unsubscribe(); }
+  ngOnDestroy(): void {
+    this.backNavigationSubscription?.unsubscribe();
+    this.searchRequestSubscription?.unsubscribe();
+    this.globalSearchSubscription?.unsubscribe();
+  }
+
+  @HostBinding('class.has-profile-image')
+  get hasProfileImage(): boolean { return !!this.profileImageUrl(); }
+
+  @HostBinding('style.--profile-image-url')
+  get profileImageStyle(): string {
+    const url = this.profileImageUrl();
+    return url ? `url("${url.replaceAll('"', '%22')}")` : 'none';
+  }
 
   @HostListener('document:click', ['$event'])
   closeProfileMenuOnOutsideClick(event: MouseEvent): void {
@@ -307,15 +399,167 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   logout(): void { this.authService.logout(); this.router.navigate(['/']); }
 
-  selectVehicle(index: number): void { this.selectedVehicleIndex.set(index); }
+  selectVehicle(index: number): void {
+    this.searched.set(false);
+    this.searchResult.set(null);
+    this.searchError.set('');
+    this.selectedVehicleIndex.set(index);
+  }
+
+  updateSearchQuery(value: string): void {
+    this.query.set(value);
+    this.searched.set(false);
+    this.searchResult.set(null);
+    this.searchError.set('');
+    this.searchRequestSubscription?.unsubscribe();
+    this.searchLoading.set(false);
+  }
 
   search(): void {
-    const term = this.query().trim().toLowerCase();
-    const matchingIndex = this.vehicles().findIndex(vehicle =>
-      vehicle.registration?.toLowerCase().includes(term) || vehicle.name?.toLowerCase().includes(term)
-    );
-    if (matchingIndex >= 0) this.selectVehicle(matchingIndex);
+    const term = this.query().trim().replace(/\s+/g, '').toUpperCase();
     this.searched.set(true);
+    this.searchResult.set(null);
+    this.searchError.set('');
+    this.searchRequestSubscription?.unsubscribe();
+
+    if (!term) {
+      this.searchError.set('Enter a registration number to search.');
+      return;
+    }
+
+    this.searchLoading.set(true);
+    this.searchRequestSubscription = this.apiService.get<VehicleLookupResponse>(`/vehicle/${encodeURIComponent(term)}`)
+      .pipe(finalize(() => this.searchLoading.set(false)))
+      .subscribe({
+        next: response => {
+          const vehicle = response.data;
+          if (!vehicle) {
+            this.searchError.set('No vehicle was found for that registration number.');
+            return;
+          }
+          const report = vehicle.missingDetails?.[0];
+          const location = report
+            ? [report.missingAddress, report.city, report.district, report.state, report.country].filter(Boolean).join(', ')
+            : '';
+          this.searchResult.set({
+            id: vehicle.id,
+            name: vehicle.vehicleModel || vehicle.vehicleCompany,
+            registration: vehicle.regNumber,
+            location: location || null,
+            reportedAt: report?.missingDate
+              ? `${report.missingDate}${report.missingTime ? `T${report.missingTime}` : ''}`
+              : null,
+            image: vehicle.imageUrls?.[0] ?? null,
+            chassis: vehicle.chassisNumber,
+            engine: vehicle.engineNumber,
+            color: vehicle.color,
+            description: report?.description ?? null,
+            status: vehicle.vehicleStatus || report?.vehicleStatus || null,
+            owner: vehicle.owner,
+            ownerMobile: vehicle.ownerMobile,
+            type: vehicle.type,
+            vehicleCompany: vehicle.vehicleCompany
+          });
+        },
+        error: error => this.searchError.set(
+          error?.error?.status?.message || error?.error?.message || 'Unable to search for this vehicle. Please try again.'
+        )
+      });
+  }
+
+  updateGlobalQuery(value: string): void {
+    this.globalQuery.set(value);
+    this.clearGlobalSearchResults();
+  }
+
+  updateGlobalSearchType(value: string): void {
+    if (value !== 'regNumber' && value !== 'model' && value !== 'missingCity' && value !== 'pinCode') return;
+    this.globalSearchType.set(value);
+    this.clearGlobalSearchResults();
+  }
+
+  selectGlobalSearchVehicle(index: number): void {
+    if (index >= 0 && index < this.globalSearchResults().length) {
+      this.globalSearchSelectedIndex.set(index);
+    }
+  }
+
+  private clearGlobalSearchResults(): void {
+    if (!this.globalSearchActive()) return;
+    this.globalSearchActive.set(false);
+    this.globalSearchResults.set([]);
+    this.globalSearchSelectedIndex.set(0);
+    this.globalSearchError.set('');
+    this.globalSearchSubscription?.unsubscribe();
+    this.globalSearchLoading.set(false);
+  }
+
+  searchDashboardVehicles(page = 0): void {
+    const term = this.globalQuery().trim();
+    this.globalSearchActive.set(true);
+    this.searched.set(false);
+    this.searchResult.set(null);
+    this.globalSearchResults.set([]);
+    this.globalSearchSelectedIndex.set(0);
+    this.globalSearchError.set('');
+    this.globalSearchPage.set(page);
+    this.globalSearchSubscription?.unsubscribe();
+
+    if (!term) {
+      this.globalSearchError.set(`Enter a value to search by ${this.globalSearchType()}.`);
+      return;
+    }
+
+    const params = new HttpParams()
+      .set(this.globalSearchType(), term)
+      .set('page', page)
+      .set('size', this.globalSearchPageSize);
+    this.globalSearchLoading.set(true);
+    this.globalSearchSubscription = this.apiService.get<VehicleSearchResponse>('/vehicles/search', params)
+      .pipe(finalize(() => this.globalSearchLoading.set(false)))
+      .subscribe({
+        next: response => {
+          const resultPage = response.data;
+          this.globalSearchResults.set((resultPage.content ?? []).map(vehicle => this.toDashboardVehicle(vehicle)));
+          this.globalSearchSelectedIndex.set(0);
+          this.globalSearchPage.set(resultPage.number);
+          this.globalSearchTotalPages.set(resultPage.totalPages);
+          this.globalSearchTotalElements.set(resultPage.totalElements);
+        },
+        error: error => {
+          this.globalSearchTotalPages.set(0);
+          this.globalSearchTotalElements.set(0);
+          this.globalSearchError.set(
+            error?.error?.status?.message || error?.error?.message || 'Unable to search missing vehicles. Please try again.'
+          );
+        }
+      });
+  }
+
+  private toDashboardVehicle(vehicle: VehicleLookupData): DashboardVehicle {
+    const report = vehicle.missingDetails?.[0];
+    const location = report
+      ? [report.city, report.district, report.state, report.country].filter(Boolean).join(', ')
+      : '';
+    return {
+      id: vehicle.id,
+      name: vehicle.vehicleModel || vehicle.vehicleCompany,
+      registration: vehicle.regNumber,
+      location: location || null,
+      reportedAt: report?.missingDate
+        ? `${report.missingDate}${report.missingTime ? `T${report.missingTime}` : ''}`
+        : null,
+      image: vehicle.imageUrls?.[0] ?? null,
+      chassis: vehicle.chassisNumber,
+      engine: vehicle.engineNumber,
+      color: vehicle.color,
+      description: report?.description ?? null,
+      status: vehicle.vehicleStatus || report?.vehicleStatus || null,
+      owner: vehicle.owner,
+      ownerMobile: vehicle.ownerMobile,
+      type: vehicle.type,
+      vehicleCompany: vehicle.vehicleCompany
+    };
   }
 
   private createProfile(): ProfileForm {
@@ -339,6 +583,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private setProfileFromResponse(response: UserProfileResponse): void {
     const profile = response.data;
+    this.profileImageUrl.set(profile.profileImageUrl ?? null);
     const address = profile.address;
     this.profile = {
       addressId: address?.id ?? 0,

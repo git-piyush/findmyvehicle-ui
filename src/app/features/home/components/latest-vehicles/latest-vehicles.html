@@ -12,14 +12,14 @@
           <span class="vehicle-status">{{vehicle.status}}</span>
         </div>
         <div class="vehicle-info">
-          <div class="vehicle-title"><div><h3>{{vehicle.registrationNumber}}</h3><p>{{vehicle.displayName || vehicle.model || vehicle.brand}}</p></div><button aria-label="View vehicle" [routerLink]="vehicle.detailUrl || '/search'"><mat-icon>arrow_outward</mat-icon></button></div>
+          <div class="vehicle-title"><div><h3>{{vehicle.registrationNumber}}</h3><p>{{vehicle.displayName || vehicle.model || vehicle.brand}}</p></div><button aria-label="View vehicle" [routerLink]="vehicle.registrationNumber ? ['/vehicle', vehicle.registrationNumber] : '/search'"><mat-icon>arrow_outward</mat-icon></button></div>
           <div class="details">
             @if (vehicle.missingLocation?.displayName) {<span><mat-icon>location_on</mat-icon>{{vehicle.missingLocation?.displayName}}</span>}
             @if (vehicle.missigngDateTime) {<span><mat-icon>calendar_today</mat-icon>{{vehicle.missigngDateTime | date:'dd MMM yyyy'}}</span>}
           </div>
           @if (vehicle.reward?.amount != null) {<b>Reward <em>{{vehicle.reward?.amount | currency:(vehicle.reward?.currency || 'INR'):'symbol':'1.0-2':'en-IN'}}</em></b>}
         </div>
-        <a class="view-details" [routerLink]="vehicle.detailUrl || '/search'">View details</a>
+        <a class="view-details" [routerLink]="vehicle.registrationNumber ? ['/vehicle', vehicle.registrationNumber] : '/search'">View details</a>
       </article>
     }</div>
   } @else {

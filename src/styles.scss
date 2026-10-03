@@ -6,6 +6,309 @@
 @use 'styles/themes';
 @use '@angular/material' as mat;
 
+.vehicle-details-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding: 9px 11px;
+  border-radius: 13px;
+  color: #008b4c;
+  background: #e8f8ef;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.vehicle-details-link:hover {
+  background: #d2f2df;
+}
+
+.vehicle-details-link mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+.vehicle-row-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.search-error {
+  display: block;
+  margin-top: 8px;
+  color: #bd2634;
+  font-size: 12px;
+}
+
+.search-result-message {
+  padding: 20px 16px;
+}
+
+.dashboard-vehicle-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(730px, 58vw);
+  padding: 6px 9px 6px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.dashboard-vehicle-search input {
+  min-width: 0;
+  flex: 1;
+  height: 34px;
+  border: 0;
+  outline: 0;
+  color: var(--color-text);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+}
+
+.dashboard-vehicle-search select {
+  width: 170px;
+  min-width: 135px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 12px;
+}
+
+.dashboard-vehicle-search .search-icon {
+  flex: 0 0 auto;
+  color: var(--color-text-secondary);
+}
+
+.dashboard-vehicle-search button {
+  display: flex;
+  place-items: center;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  background: #008d4d;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-vehicle-search button mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+}
+
+.dashboard-vehicle-search button:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search {
+  width: min(730px, 58vw);
+  gap: 8px;
+  padding: 6px 9px 6px 12px;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search input {
+  width: auto;
+  min-width: 0;
+  flex: 1;
+  height: 34px;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search select {
+  width: 170px;
+  min-width: 135px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 12px;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search .search-icon {
+  flex: 0 0 auto;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  background: #008d4d;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search button mat-icon {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  font-size: 17px;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search button:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+@media (max-width: 620px) {
+  .dashboard-vehicle-search {
+    gap: 5px;
+    width: auto;
+    flex: 1;
+    padding: 4px;
+  }
+
+  .dashboard-vehicle-search select {
+    width: 105px;
+    min-width: 0;
+    padding: 0 4px;
+    font-size: 10px;
+  }
+
+  .dashboard-vehicle-search input {
+    width: auto;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .dashboard-vehicle-search button {
+    min-height: 32px;
+    padding: 0 7px;
+  }
+
+  .dashboard-vehicle-search button span {
+    display: none;
+  }
+}
+
+@media (max-width: 850px) {
+  .dashboard-shell .topbar form.dashboard-vehicle-search {
+    width: auto;
+    flex: 1;
+  }
+}
+
+@media (max-width: 620px) {
+  .dashboard-shell .topbar form.dashboard-vehicle-search {
+    gap: 5px;
+    width: auto;
+    padding: 4px;
+  }
+
+  .dashboard-shell .topbar form.dashboard-vehicle-search input {
+    width: auto;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .dashboard-shell .topbar form.dashboard-vehicle-search select {
+    width: 105px;
+    min-width: 0;
+    padding: 0 4px;
+    font-size: 10px;
+  }
+
+  .dashboard-shell .topbar form.dashboard-vehicle-search button {
+    min-height: 32px;
+    padding: 0 7px;
+  }
+
+  .dashboard-shell .topbar form.dashboard-vehicle-search button span {
+    display: none;
+  }
+}
+
+.search-result-row {
+  min-height: 96px;
+  cursor: pointer;
+}
+
+.dashboard-shell .vehicle-list .vehicle-row-wrap.selected {
+  background: color-mix(in srgb, #00a85a 18%, var(--color-surface));
+  box-shadow: inset 4px 0 #00a85a;
+}
+
+.search-result-image {
+  flex: 0 0 68px;
+  width: 68px;
+  height: 68px;
+  border-radius: 8px;
+  background: var(--color-surface-hover);
+  object-fit: cover;
+}
+
+.search-result-info {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 4px;
+}
+
+.result-summary {
+  margin: 0;
+  padding: 10px 4px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.search-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.search-pagination button {
+  padding: 7px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-pagination button:disabled {
+  cursor: default;
+  opacity: .45;
+}
+
 html {
   height: 100%;
   @include mat.theme(

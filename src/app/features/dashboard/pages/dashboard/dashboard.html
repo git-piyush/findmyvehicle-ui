@@ -24,7 +24,7 @@
   <main class="dashboard-main">
     <header class="topbar">
       <button class="icon-button menu-button" (click)="mobileMenuOpen.set(!mobileMenuOpen())" aria-label="Toggle navigation"><mat-icon>menu</mat-icon></button>
-      <label class="global-search"><mat-icon>search</mat-icon><input placeholder="Search by vehicle number, make, model..." aria-label="Search vehicles"><mat-icon>search</mat-icon></label>
+      <form class="dashboard-vehicle-search" (ngSubmit)="searchDashboardVehicles()"><mat-icon class="search-icon">search</mat-icon><select [value]="globalSearchType()" (change)="updateGlobalSearchType($any($event.target).value)" aria-label="Search type"><option value="regNumber">Registration number</option><option value="model">Model</option><option value="missingCity">Missing city</option><option value="pinCode">PIN code</option></select><input [value]="globalQuery()" (input)="updateGlobalQuery($any($event.target).value)" [placeholder]="'Enter ' + (globalSearchType() === 'regNumber' ? 'registration number' : globalSearchType() === 'missingCity' ? 'missing city' : globalSearchType() === 'pinCode' ? 'PIN code' : 'vehicle model')" aria-label="Search value"><button type="submit" [disabled]="globalSearchLoading()"><mat-icon>search</mat-icon><span>{{ globalSearchLoading() ? 'Searching…' : 'Search' }}</span></button></form>
       <div class="topbar-actions"><button class="theme-switch" (click)="toggleTheme()" [attr.aria-label]="theme() === 'light' ? 'Enable dark theme' : 'Enable light theme'"><mat-icon>{{ theme() === 'light' ? 'light_mode' : 'dark_mode' }}</mat-icon></button><button class="notification" aria-label="Notifications"><mat-icon>notifications_none</mat-icon><b>{{ dashboardData()?.activity?.unreadNotifications ?? 0 }}</b></button><div class="profile-menu"><button class="profile-trigger" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()"><span class="avatar">{{ initials() }}</span><span class="account"><strong>{{ displayName() }}</strong><small>Member</small></span><mat-icon>keyboard_arrow_down</mat-icon></button>@if (profileMenuOpen()) {<div class="profile-dropdown"><div class="profile-summary"><span class="avatar">{{ initials() }}</span><span><strong>{{ displayName() }}</strong><small>Member account</small></span></div><button (click)="openEditProfile()"><mat-icon>person_outline</mat-icon>Edit Profile</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}</div></div>
     </header>
 
@@ -51,17 +51,45 @@
 
       <section class="dashboard-grid">
         <article class="panel vehicles-panel">
-          <header><h2>Last 3 Recently Missing Vehicles</h2><button>View All</button></header>
+          <header><h2>{{ globalSearchActive() ? 'Vehicle Search Results' : 'Last 3 Recently Missing Vehicles' }}</h2>@if (globalSearchActive()) {<button (click)="updateGlobalQuery('')">Clear search</button>} @else {<button>View All</button>}</header>
           <div class="vehicle-list">
-            @if (dashboardLoading()) {
+            @if (globalSearchActive()) {
+              @if (globalSearchLoading()) {
+                <p class="dashboard-message" role="status">Searching missing vehicles…</p>
+              } @else if (globalSearchError()) {
+                <p class="dashboard-message search-error" role="alert">{{ globalSearchError() }}</p>
+              } @else if (globalSearchResults().length) {
+                <p class="result-summary" role="status">{{ globalSearchTotalElements() }} vehicle{{ globalSearchTotalElements() === 1 ? '' : 's' }} found</p>
+                @for (vehicle of globalSearchResults(); track vehicle.id; let i = $index) {
+                  <div class="vehicle-row-wrap search-result-row" [class.selected]="globalSearchSelectedIndex() === i" [attr.aria-current]="globalSearchSelectedIndex() === i ? 'true' : null" (click)="selectGlobalSearchVehicle(i)">
+                    @if (vehicle.image) {<img class="search-result-image" [src]="vehicle.image" [alt]="vehicle.name || 'Vehicle image'">} @else {<span class="vehicle-image-placeholder"><mat-icon>directions_car</mat-icon></span>}
+                    <span class="search-result-info"><strong>{{ vehicle.name || 'Vehicle' }}</strong><b>{{ vehicle.registration || 'Registration unavailable' }}</b><small><mat-icon>location_on</mat-icon>{{ vehicle.location || 'Location unavailable' }}</small><small><mat-icon>calendar_today</mat-icon>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Date unavailable' }}</small></span>
+                    @if (vehicle.registration) {<a class="vehicle-details-link" [routerLink]="['/dashboard/vehicle', vehicle.registration]" (click)="$event.stopPropagation()">View Details <mat-icon>chevron_right</mat-icon></a>}
+                  </div>
+                }
+                @if (globalSearchTotalPages() > 1) {
+                  <nav class="search-pagination" aria-label="Search result pages">
+                    <button type="button" (click)="searchDashboardVehicles(globalSearchPage() - 1)" [disabled]="globalSearchPage() === 0 || globalSearchLoading()">Previous</button>
+                    <span>Page {{ globalSearchPage() + 1 }} of {{ globalSearchTotalPages() }}</span>
+                    <button type="button" (click)="searchDashboardVehicles(globalSearchPage() + 1)" [disabled]="globalSearchPage() + 1 >= globalSearchTotalPages() || globalSearchLoading()">Next</button>
+                  </nav>
+                }
+              } @else {
+                <p class="dashboard-message" role="status">No missing vehicles matched your search.</p>
+              }
+            } @else if (dashboardLoading()) {
               <p class="dashboard-message" role="status">Loading vehicles…</p>
             } @else if (vehicles().length) {
               @for (vehicle of vehicles(); track vehicle.id; let i = $index) {
-                <button class="vehicle-row" (click)="selectVehicle(i)" [class.selected]="selectedVehicleIndex() === i">
-                  @if (vehicle.image) {<img [src]="vehicle.image" [alt]="vehicle.name || 'Vehicle image'">} @else {<span class="vehicle-image-placeholder"><mat-icon>directions_car</mat-icon></span>}
-                  <span><strong>{{ vehicle.name || 'Vehicle' }}</strong><b>{{ vehicle.registration || 'Registration unavailable' }}</b><small><mat-icon>location_on</mat-icon>{{ vehicle.location || 'Location unavailable' }}</small><small><mat-icon>calendar_today</mat-icon>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Date unavailable' }}</small></span>
-                  <em>View Details <mat-icon>chevron_right</mat-icon></em>
-                </button>
+                <div class="vehicle-row-wrap" [class.selected]="selectedVehicleIndex() === i">
+                  <button class="vehicle-row" (click)="selectVehicle(i)">
+                    @if (vehicle.image) {<img [src]="vehicle.image" [alt]="vehicle.name || 'Vehicle image'">} @else {<span class="vehicle-image-placeholder"><mat-icon>directions_car</mat-icon></span>}
+                    <span><strong>{{ vehicle.name || 'Vehicle' }}</strong><b>{{ vehicle.registration || 'Registration unavailable' }}</b><small><mat-icon>location_on</mat-icon>{{ vehicle.location || 'Location unavailable' }}</small><small><mat-icon>calendar_today</mat-icon>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Date unavailable' }}</small></span>
+                  </button>
+                  @if (vehicle.registration) {
+                    <a class="vehicle-details-link" [routerLink]="['/dashboard/vehicle', vehicle.registration]">View Details <mat-icon>chevron_right</mat-icon></a>
+                  }
+                </div>
               }
             } @else {
               <p class="dashboard-message">No recently missing vehicles to show.</p>
@@ -71,17 +99,36 @@
         </article>
 
         <article class="panel search-panel">
-          <section class="vehicle-search"><h2>Search Any Missing Vehicle</h2><div><input #searchBox (input)="query.set(searchBox.value)" (keyup.enter)="search()" placeholder="Enter Registration Number"><button (click)="search()"><mat-icon>search</mat-icon>Search</button></div><p>Search among recently reported missing vehicles.</p>@if (searched()) {<small class="search-feedback">Search complete.</small>}</section>
+          <section class="vehicle-search"><h2>Search Any Missing Vehicle</h2><div><input #searchBox [value]="query()" (input)="updateSearchQuery(searchBox.value)" (keyup.enter)="search()" placeholder="Enter Registration Number" aria-label="Vehicle registration number" [disabled]="searchLoading()"><button (click)="search()" [disabled]="searchLoading()"><mat-icon>search</mat-icon>{{ searchLoading() ? 'Searching…' : 'Search' }}</button></div><p>Search by vehicle registration number.</p>@if (searchError()) {<small class="search-error" role="alert">{{ searchError() }}</small>}</section>
           @if (selectedVehicle; as vehicle) {
             <section class="vehicle-details">
-              <div class="details-heading"><div><h2>Missing Vehicle Details</h2><p>Selected reported vehicle</p></div><select [value]="selectedVehicleIndex()" (change)="selectVehicle(+$any($event.target).value)">@for (item of vehicles(); track item.id; let i = $index) {<option [value]="i">{{ item.registration || 'Unknown registration' }} - {{ item.name || 'Vehicle' }}</option>}</select></div>
+              <div class="details-heading">
+                <div><h2>Missing Vehicle Details</h2><p>{{ globalSearchActive() ? 'Search result' : searched() ? 'Search result' : 'Selected reported vehicle' }}</p></div>
+                @if (globalSearchActive() && globalSearchResults().length) {
+                  <select [value]="globalSearchSelectedIndex()" (change)="selectGlobalSearchVehicle(+$any($event.target).value)" aria-label="Choose a vehicle from search results">
+                    @for (item of globalSearchResults(); track item.id; let i = $index) {
+                      <option [value]="i">{{ item.registration || 'Unknown registration' }} - {{ item.name || 'Vehicle' }}</option>
+                    }
+                  </select>
+                } @else if (!globalSearchActive() && !searchResult() && vehicles().length) {
+                  <select [value]="selectedVehicleIndex()" (change)="selectVehicle(+$any($event.target).value)" aria-label="Choose a recently reported vehicle">
+                    @for (item of vehicles(); track item.id; let i = $index) {
+                      <option [value]="i">{{ item.registration || 'Unknown registration' }} - {{ item.name || 'Vehicle' }}</option>
+                    }
+                  </select>
+                }
+              </div>
               <div class="details-content">
                 @if (vehicle.image) {<img [src]="vehicle.image" [alt]="vehicle.name || 'Vehicle image'">} @else {<span class="vehicle-image-placeholder detail-image-placeholder"><mat-icon>directions_car</mat-icon></span>}
-                <div class="detail-info"><h3>{{ vehicle.name || 'Vehicle' }}</h3><div class="detail-grid"><p><mat-icon>directions_car</mat-icon><span>Registration No.<b>{{ vehicle.registration || 'Not provided' }}</b></span></p><p><mat-icon>key</mat-icon><span>Chassis No.<b>{{ vehicle.chassis || 'Not provided' }}</b></span></p><p><mat-icon>location_on</mat-icon><span>Location<b>{{ vehicle.location || 'Not provided' }}</b></span></p><p><mat-icon>settings</mat-icon><span>Engine No.<b>{{ vehicle.engine || 'Not provided' }}</b></span></p><p><mat-icon>calendar_today</mat-icon><span>Date & Time Reported<b>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Not provided' }}</b></span></p><p><mat-icon>palette</mat-icon><span>Color<b>{{ vehicle.color || 'Not provided' }}</b></span></p></div></div>
+                <div class="detail-info"><h3>{{ vehicle.name || 'Vehicle' }}</h3><div class="detail-grid"><p><mat-icon>directions_car</mat-icon><span>Registration No.<b>{{ vehicle.registration || 'Not provided' }}</b></span></p><p><mat-icon>key</mat-icon><span>Chassis No.<b>{{ vehicle.chassis || 'Not provided' }}</b></span></p><p><mat-icon>location_on</mat-icon><span>Location<b>{{ vehicle.location || 'Not provided' }}</b></span></p><p><mat-icon>settings</mat-icon><span>Engine No.<b>{{ vehicle.engine || 'Not provided' }}</b></span></p><p><mat-icon>calendar_today</mat-icon><span>Date & Time Reported<b>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Not provided' }}</b></span></p><p><mat-icon>palette</mat-icon><span>Color<b>{{ vehicle.color || 'Not provided' }}</b></span></p>@if (vehicle.type) {<p><mat-icon>category</mat-icon><span>Type<b>{{ vehicle.type }}</b></span></p>}@if (vehicle.owner) {<p><mat-icon>person</mat-icon><span>Owner<b>{{ vehicle.owner }}</b></span></p>}</div></div>
               </div>
               <div class="description"><strong>Description</strong><p>{{ vehicle.description || 'No description provided.' }}</p></div>
               <p class="information"><mat-icon>info_outline</mat-icon>If you have any information about this vehicle, please contact your nearest police station.</p>
             </section>
+          } @else if (searchLoading()) {
+            <p class="dashboard-message search-result-message" role="status">Searching vehicle details…</p>
+          } @else if (searchError()) {
+            <p class="dashboard-message search-result-message" role="alert">{{ searchError() }}</p>
           } @else if (!dashboardLoading()) {
             <p class="dashboard-message">Select a reported vehicle to view its details.</p>
           }

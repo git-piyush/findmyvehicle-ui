@@ -37,6 +37,19 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/search/pages/search/search')
             .then(c => c.SearchComponent)
+      },
+      {
+        path: 'vehicle/:regNumber',
+        data: {
+          seo: {
+            title: 'Vehicle Details | Find My Vehicle',
+            description: 'View details and report a sighting of a missing vehicle.',
+            robots: 'noindex, follow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/vehicle-details/pages/vehicle-details/vehicle-details')
+            .then(c => c.VehicleDetailsComponent)
       }
     ]
   },
@@ -56,6 +69,19 @@ export const routes: Routes = [
       import('./features/dashboard/pages/dashboard/dashboard')
         .then(c => c.DashboardComponent),
     children: [
+      {
+        path: 'vehicle/:regNumber',
+        data: {
+          seo: {
+            title: 'Vehicle Details | Find My Vehicle',
+            description: 'View details and report a sighting of a missing vehicle.',
+            robots: 'noindex, nofollow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/vehicle-details/pages/vehicle-details/vehicle-details')
+            .then(c => c.VehicleDetailsComponent)
+      },
       {
         path: 'report-missing',
         loadComponent: () => import('./features/vehicle-reports/pages/report-missing/report-missing')
