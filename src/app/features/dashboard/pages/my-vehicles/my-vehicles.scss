@@ -39,6 +39,10 @@
 .badges .status{color:#9e3131;background:#ffebee}
 .badges .status.found{color:#087943;background:#e7f8ef}
 .details-link{min-height:35px;padding:0 10px}
+.vehicle-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}
+.missing-report-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:35px;padding:0 10px;border:1px solid #c43d3d;border-radius:7px;color:#a52d2d;background:var(--color-surface);font:inherit;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer}
+.missing-report-button:hover{color:#fff;background:#a52d2d}
+.missing-report-button mat-icon{width:16px;height:16px;font-size:16px}
 .vehicle-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:13px 0}
 .vehicle-meta>div{align-items:center;gap:7px;min-width:0}
 .vehicle-meta>div>mat-icon{flex:0 0 17px;color:var(--color-primary);font-size:17px}
@@ -69,7 +73,7 @@
 .empty-state h3{margin:12px 0 0;font-size:16px}
 .error-state{color:#af2632}
 @media(max-width:900px){.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.vehicle-meta{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:620px){.listing-page{padding:22px 15px 32px}.page-heading h1{font-size:23px}.filter-card{padding:15px}.filter-grid{grid-template-columns:1fr;gap:10px}.filter-actions{justify-content:stretch}.filter-actions button{flex:1}.vehicle-card{padding:13px}.vehicle-top{align-items:flex-start;flex-wrap:wrap}.vehicle-image{flex-basis:68px;width:68px;height:64px}.vehicle-heading{flex-basis:calc(100% - 88px)}.details-link{margin-left:auto}.vehicle-meta{gap:11px}.list-heading{align-items:flex-start}}
+@media(max-width:620px){.listing-page{padding:22px 15px 32px}.page-heading h1{font-size:23px}.filter-card{padding:15px}.filter-grid{grid-template-columns:1fr;gap:10px}.filter-actions{justify-content:stretch}.filter-actions button{flex:1}.vehicle-card{padding:13px}.vehicle-top{align-items:flex-start;flex-wrap:wrap}.vehicle-image{flex-basis:68px;width:68px;height:64px}.vehicle-heading{flex-basis:calc(100% - 88px)}.vehicle-actions{margin-left:auto}.vehicle-meta{gap:11px}.list-heading{align-items:flex-start}}
 .vehicle-list{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
 .vehicle-card{min-width:0;padding:15px}
 .vehicle-meta{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -80,7 +84,7 @@
 .vehicle-image{flex-basis:72px;width:72px;height:62px}
 .vehicle-heading h3{font-size:14px}
 .badges{margin-top:5px}
-.details-link{min-height:32px;padding:0 8px}
+.details-link,.missing-report-button{min-height:32px;padding:0 8px}
 .vehicle-meta{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px 0}
 .vehicle-meta>div{gap:5px}
 .report-summary{padding:8px 10px}

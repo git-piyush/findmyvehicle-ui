@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -7,8 +8,9 @@ import { MissingVehicleReport } from '../../../../core/models/vehicle/missing-ve
 import { VehicleReportService } from '../../../../core/services/vehicle-report.service';
 
 @Component({ selector: 'app-report-missing', standalone: true, imports: [ReactiveFormsModule, RouterLink, MatIconModule], templateUrl: './report-missing.html', styleUrl: './report-missing.scss' })
-export class ReportMissingComponent {
+export class ReportMissingComponent implements OnInit {
   private readonly fb = inject(FormBuilder); private readonly reports = inject(VehicleReportService); private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly loading = signal(false); readonly submitted = signal(false); readonly error = signal(''); readonly selectedImages = signal<File[]>([]); readonly imagePreviews = signal<string[]>([]);
   readonly photoSlots = [0, 1, 2, 3];
   readonly form = this.fb.nonNullable.group({
@@ -34,6 +36,29 @@ export class ReportMissingComponent {
       reward: [''],
       description: ['', [Validators.required, Validators.minLength(5)]]
   });
+  ngOnInit(): void {
+    const navigationState = this.router.getCurrentNavigation()?.extras.state;
+    const vehicle = navigationState?.['vehicle'] ??
+      (isPlatformBrowser(this.platformId) ? window.history.state?.vehicle : undefined);
+    if (!vehicle || typeof vehicle !== 'object') return;
+
+    const details = vehicle as Record<string, unknown>;
+    const value = (key: string): string => {
+      const candidate = details[key];
+      return typeof candidate === 'string' ? candidate : '';
+    };
+    this.form.patchValue({
+      regNumber: value('regNumber'),
+      vehicleCompany: value('vehicleCompany'),
+      vehicleModel: value('vehicleModel'),
+      type: value('type'),
+      color: value('color'),
+      chassisNumber: value('chassisNumber'),
+      engineNumber: value('engineNumber'),
+      owner: value('owner'),
+      ownerMobile: value('ownerMobile')
+    });
+  }
   onImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files ?? []);

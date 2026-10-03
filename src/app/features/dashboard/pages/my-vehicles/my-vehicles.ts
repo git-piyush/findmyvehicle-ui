@@ -3,7 +3,7 @@ import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
@@ -61,6 +61,7 @@ export class MyVehiclesComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly router = inject(Router);
   private requestSubscription?: Subscription;
 
   readonly regNumber = signal('');
@@ -145,5 +146,23 @@ export class MyVehiclesComponent implements OnInit {
     return [report.missingAddress, report.city, report.district, report.state]
       .filter((value): value is string => !!value?.trim())
       .join(', ') || 'Location unavailable';
+  }
+
+  reportMissingVehicle(vehicle: UserVehicle): void {
+    void this.router.navigate(['/dashboard/report-missing'], {
+      state: {
+        vehicle: {
+          regNumber: vehicle.regNumber,
+          vehicleCompany: vehicle.vehicleCompany ?? '',
+          vehicleModel: vehicle.vehicleModel ?? '',
+          type: vehicle.type ?? '',
+          color: vehicle.color ?? '',
+          chassisNumber: vehicle.chassisNumber ?? '',
+          engineNumber: vehicle.engineNumber ?? '',
+          owner: vehicle.owner ?? '',
+          ownerMobile: vehicle.ownerMobile ?? ''
+        }
+      }
+    });
   }
 }

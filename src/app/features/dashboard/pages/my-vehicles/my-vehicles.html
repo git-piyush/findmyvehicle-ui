@@ -1,7 +1,7 @@
 <main class="listing-page">
   <header class="page-heading">
     <div><span class="eyebrow">Your garage</span><h1>My Vehicles</h1><p>Vehicles listed by you, with their identification and report status.</p></div>
-    <a class="listing-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>List a vehicle</a>
+    <a class="listing-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>List a New Vehicle</a>
   </header>
 
   <section class="filter-card" aria-label="Filter your vehicles">
@@ -29,7 +29,10 @@
               @if (vehicle.imageUrls?.[0]; as imageUrl) {<img class="vehicle-image" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber">}
               @else {<span class="vehicle-image placeholder"><mat-icon>directions_car</mat-icon></span>}
               <div class="vehicle-heading"><span class="eyebrow">{{ vehicle.vehicleCompany || 'Vehicle' }}{{ vehicle.type ? ' · ' + vehicle.type : '' }}</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3><p class="registration">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
-              <a class="details-link" [routerLink]="['/dashboard/my-reports']" [queryParams]="{ regNumber: vehicle.regNumber }">View report details<mat-icon>arrow_forward</mat-icon></a>
+              <div class="vehicle-actions">
+                <a class="details-link" [routerLink]="['/dashboard/my-reports']" [queryParams]="{ regNumber: vehicle.regNumber }">View report details<mat-icon>arrow_forward</mat-icon></a>
+                <button class="missing-report-button" type="button" (click)="reportMissingVehicle(vehicle)"><mat-icon>campaign</mat-icon>Report Missing Vehicle</button>
+              </div>
             </div>
             <div class="vehicle-meta">
               <div><mat-icon>confirmation_number</mat-icon><span><small>Chassis number</small><strong>{{ vehicle.chassisNumber || 'Not provided' }}</strong></span></div>
@@ -52,7 +55,7 @@
         }
       </div>
     } @else {
-      <div class="state-card empty-state"><span class="empty-icon"><mat-icon>directions_car</mat-icon></span><h3>{{ searched() ? 'No vehicles match those filters' : 'No vehicles listed yet' }}</h3><p>{{ searched() ? 'Try adjusting your filters and search again.' : 'Vehicles that you report will appear here.' }}</p><a routerLink="/dashboard/report-missing">List a vehicle</a></div>
+      <div class="state-card empty-state"><span class="empty-icon"><mat-icon>directions_car</mat-icon></span><h3>{{ searched() ? 'No vehicles match those filters' : 'No vehicles listed yet' }}</h3><p>{{ searched() ? 'Try adjusting your filters and search again.' : 'Vehicles that you report will appear here.' }}</p><a routerLink="/dashboard/report-missing">List a New Vehicle</a></div>
     }
   </section>
 </main>
