@@ -1,9 +1,9 @@
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
-import { Component, computed, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
@@ -30,7 +30,6 @@ type ReportedVehicle = {
   chassisNumber: string | null;
   engineNumber: string | null;
   owner: string | null;
-  ownerEmail: string | null;
   ownerMobile: string | null;
   color: string | null;
   type: string | null;
@@ -41,7 +40,7 @@ type ReportedVehicle = {
   missingDetails: MissingReport[] | null;
 };
 
-type ReportedVehiclesResponse = {
+type AllVehiclesResponse = {
   status: { status: number; message: string };
   data: {
     content: ReportedVehicle[];
@@ -55,35 +54,25 @@ type ReportedVehiclesResponse = {
   };
 };
 
-type MissingReportEntry = {
-  vehicle: ReportedVehicle;
-  detail: MissingReport;
-};
-
 @Component({
-  selector: 'app-my-reports',
+  selector: 'app-all-vehicles',
   standalone: true,
   imports: [DatePipe, MatIconModule, RouterLink],
-  templateUrl: './my-reports.html',
-  styleUrl: './my-reports.scss'
+  templateUrl: './all-vehicles.html',
+  styleUrl: './all-vehicles.scss'
 })
-export class MyReportsComponent implements OnInit {
+export class AllVehiclesComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly route = inject(ActivatedRoute);
   private requestSubscription?: Subscription;
 
   readonly regNumber = signal('');
   readonly model = signal('');
   readonly missingCity = signal('');
   readonly pinCode = signal('');
+  readonly status = signal('');
   readonly vehicles = signal<ReportedVehicle[]>([]);
-  readonly reports = computed<MissingReportEntry[]>(() =>
-    this.vehicles().flatMap(vehicle =>
-      (vehicle.missingDetails ?? []).map(detail => ({ vehicle, detail }))
-    )
-  );
   readonly loading = signal(false);
   readonly error = signal('');
   readonly searched = signal(false);
@@ -93,17 +82,12 @@ export class MyReportsComponent implements OnInit {
   readonly totalElements = signal(0);
 
   ngOnInit(): void {
-    const regNumber = this.route.snapshot.queryParamMap.get('regNumber')?.trim() ?? '';
-    if (regNumber) {
-      this.regNumber.set(regNumber);
-      this.searched.set(true);
-    }
-    if (isPlatformBrowser(this.platformId)) this.loadReports(0);
+    if (isPlatformBrowser(this.platformId)) this.loadVehicles(0);
   }
 
   search(): void {
     this.searched.set(true);
-    this.loadReports(0);
+    this.loadVehicles(0);
   }
 
   clearFilters(): void {
@@ -111,18 +95,20 @@ export class MyReportsComponent implements OnInit {
     this.model.set('');
     this.missingCity.set('');
     this.pinCode.set('');
+    this.status.set('');
     this.searched.set(false);
-    this.loadReports(0);
+    this.loadVehicles(0);
   }
 
-  loadReports(page: number): void {
+  loadVehicles(page: number): void {
     this.requestSubscription?.unsubscribe();
     let params = new HttpParams().set('page', page).set('size', this.pageSize);
     const filters = [
       ['regNumber', this.regNumber()],
       ['model', this.model()],
       ['missingCity', this.missingCity()],
-      ['pinCode', this.pinCode()]
+      ['pinCode', this.pinCode()],
+      ['status', this.status()]
     ] as const;
     for (const [name, value] of filters) {
       if (value.trim()) params = params.set(name, value.trim());
@@ -130,7 +116,7 @@ export class MyReportsComponent implements OnInit {
 
     this.loading.set(true);
     this.error.set('');
-    this.requestSubscription = this.apiService.get<ReportedVehiclesResponse>('/vehicles/reported-by-me', params)
+    this.requestSubscription = this.apiService.get<AllVehiclesResponse>('/vehicles/reported-all', params)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.loading.set(false))
@@ -149,13 +135,15 @@ export class MyReportsComponent implements OnInit {
           this.error.set(
             error?.error?.status?.message ||
             error?.error?.message ||
-            'Unable to load your reports. Please try again.'
+            'Unable to load all vehicles. Please try again.'
           );
         }
       });
   }
 
-  joinValues(...values: (string | null)[]): string {
-    return values.filter((value): value is string => !!value?.trim()).join(', ') || 'Not provided';
+  latestReportLocation(report: MissingReport): string {
+    return [report.missingAddress, report.city, report.district, report.state]
+      .filter((value): value is string => !!value?.trim())
+      .join(', ') || 'Location unavailable';
   }
 }

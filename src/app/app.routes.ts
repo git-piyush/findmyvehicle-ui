@@ -109,6 +109,32 @@ export const routes: Routes = [
             .then(c => c.MyVehiclesComponent)
       },
       {
+        path: 'all-reports',
+        data: {
+          seo: {
+            title: 'All Reports | Find My Vehicle',
+            description: 'Browse missing vehicle reports shared on Find My Vehicle.',
+            robots: 'noindex, nofollow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/dashboard/pages/all-reports/all-reports')
+            .then(c => c.AllReportsComponent)
+      },
+      {
+        path: 'all-vehicles',
+        data: {
+          seo: {
+            title: 'All Vehicles | Find My Vehicle',
+            description: 'Browse vehicles listed on Find My Vehicle.',
+            robots: 'noindex, nofollow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/dashboard/pages/all-vehicles/all-vehicles')
+            .then(c => c.AllVehiclesComponent)
+      },
+      {
         path: 'report-missing',
         loadComponent: () => import('./features/vehicle-reports/pages/report-missing/report-missing')
           .then(c => c.ReportMissingComponent)
